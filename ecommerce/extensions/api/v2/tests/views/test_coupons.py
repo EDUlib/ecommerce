@@ -446,7 +446,8 @@ class CouponViewSetFunctionalTest(CouponMixin, CourseCatalogTestMixin, CatalogPr
         vouchers = coupon.attr.coupon_vouchers.vouchers.all()
         CouponViewSet().update_coupon_benefit_value(
             benefit_value=Decimal(54),
-            vouchers=vouchers
+            vouchers=vouchers,
+            coupon=coupon
         )
 
         for voucher in vouchers:
@@ -533,7 +534,7 @@ class CouponViewSetFunctionalTest(CouponMixin, CourseCatalogTestMixin, CatalogPr
         details_response = self.client.get(reverse('api:v2:coupons-detail', args=[coupon_id]))
         detail = json.loads(details_response.content)
         self.assertEqual(detail['catalog_query'], catalog_query)
-        self.assertEqual(detail['course_seat_types'], course_seat_types[0])
+        self.assertEqual(detail['course_seat_types'], course_seat_types)
         self.assertEqual(detail['seats'][0]['id'], seat.id)
 
 

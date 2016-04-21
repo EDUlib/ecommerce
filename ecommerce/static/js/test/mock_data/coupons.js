@@ -245,6 +245,6 @@ define([], function(){
         'lastEditData': lastEditData,
         'percentageDiscountCodeVoucher': percentageDiscountCodeVoucher,
         'valueDiscountCodeVoucher': valueDiscountCodeVoucher,
-        'verifiedSeat': verifiedSeat
+        'verifiedSeat': verifiedSeat,
     };
 });

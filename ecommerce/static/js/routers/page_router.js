@@ -1,14 +1,17 @@
 define([
-        'backbone'
+        'backbone',
+        'backbone.route-filter',
+        'backbone.super'
     ],
-    function (Backbone) {
+    function (Backbone,
+              BackboneRouteFilter, // jshint ignore:line
+              BackboneSuper) { // jshint ignore:line
         'use strict';
 
         /***
          * Base Router class.
          */
         return Backbone.Router.extend({
-
             // Keeps track of the page/view currently on display
             currentView: null,
 
