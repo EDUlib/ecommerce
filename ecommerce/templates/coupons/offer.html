@@ -9,23 +9,161 @@
 {% endblock navbar %}
 
 {% block content %}
-    <div id="offer">
-        {% if error %}
-            {% include "coupons/_offer_error.html" %}
-        {% else %}
-            {% if is_enrollment_code %}
-                {% include "coupons/_offer_enrollment.html" %}
-            {% else %}
-                {% include "coupons/_offer_discount.html" %}
-            {% endif %}
-        {% endif %}
-    </div>
+<div id="offer">
+    {% if error %}
+    {% include "coupons/_offer_error.html" %}
+    {% else %}
+    <div class="container">
+        <div class="row">
+            <section
+                    class="col-xs-12 col-md-8 col-lg-12{% if courses|length == 1 %}col-lg-8 col-lg-offset-2{% endif %}">
 
-    {% if analytics_data %}
-        <script type="text/javascript">
-            var initModelData = {{ analytics_data|safe }};
-        </script>
+                {% if courses.1 %}
+                    <h3 class="number-of-products-header col-xs-12"><b>
+                        {% trans "Select a course from below" %}
+                    </b></h3>
+                {% endif %}
+
+                {% if courses.has_other_pages %}
+                <ul class="pagination clearfix">
+                    <li class="pull-right hidden-xs {% if not courses.has_next %}disabled{% endif %}">
+                        <a {% if courses.has_next %}
+                            href="?code={{ code }}&page={{ courses.next_page_number }}" {% endif %}>&gt;</a>
+                    </li>
+                    {% for course in courses.paginator.page_range reversed %}
+                    {% ifequal course courses.number %}
+                    <li class="active pull-right hidden-xs"><a href="#">{{ course }}</a></li>
+                    {% else %}
+                    <li class="pull-right hidden-xs"><a href="?code={{ code }}&page={{ course }}">{{ course }}</a></li>
+                    {% endifequal %}
+                    {% endfor %}
+                    <li class="pull-right hidden-xs {% if not courses.has_previous %}disabled{% endif %}">
+                        <a {% if courses.has_previous %}
+                            href="?code={{ code }}&page={{ courses.previous_page_number }}" {% endif %}>&lt;</a>
+                    </li>
+                    <li class="current">
+                        {% trans "Showing" %} {{ courses.start_index }}
+                        - {{ courses.end_index }} {% trans "of" %} [{{ courses.paginator.count }}]
+                    </li>
+                </ul>
+                {% endif %}
+
+                {% for course in courses %}
+                    <div class="discount-multiple-courses {% if not courses|length == 1 %}col-xs-12 col-lg-6{% endif %}">
+                        <div class="box-shadow col-xs-12">
+                            <div class="col-sm-5">
+                                <div class="image-container">
+                                    <div class="discount-percentage"><p>{{ course.benefit_value }}
+                                        <span>OFF</span></p>
+                                    </div>
+                                    <img class="img-responsive" src="{{ course.image.src }}"
+                                         alt="{{ course.title }}"/>
+
+                                    <div class="voucher-valid-until">
+                                        <p>{% trans "Discount valid until" %}
+                                            {{ voucher_valid_until|date:"M d, Y" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-7 col-xs-12">
+                                <p class="course_name">{{ course.title }}</p>
+
+                                <p class="course_org">{{ course.org }}</p>
+
+                                <p class="course_start">{% trans "Course starts" %}:
+                                    {{ course.start_date|date:"M d, Y" }}</p>
+
+                                <div class="discount-mc-price-group clearfix">
+                                    <div class="pull-left">
+                                        <p class="course-price">{% trans "Was" %}
+                                            <span>${{ course.price|floatformat }}</span>
+                                        </p>
+                                    </div>
+                                    <div class="pull-left">
+                                        <p class="course-new-price">{% trans "Now" %}
+                                            <span>${{ course.new_price|floatformat }}</span>
+                                        </p>
+                                    </div>
+                                    <div class="pull-right">
+                                        {% if is_enrollment_code %}
+                                            <a href="{% url 'coupons:redeem' %}?code={{ code }}&sku={{ course.sku }}"
+                                               id="RedeemEnrollment"
+                                               class="btn btn-success">{% trans "Enroll and Redeem Code" %}</a>
+                                        {% else %}
+                                            <a href="{% url 'coupons:redeem' %}?code={{ code }}&sku={{ course.sku }}"
+                                               id="PurchaseCertificate"
+                                               class="btn btn-success btn-purchase"
+                                               data-track-type="click"
+                                               data-track-event="edx.bi.ecommerce.coupons.accept_offer"
+                                               data-track-category="coupon-codes"
+                                               data-course-id="{{ course.key }}">
+                                                {% trans "Get Certificate" %}
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% if courses.has_other_pages %}
+                <ul class="pagination clearfix">
+                    <li class="pull-right {% if not courses.has_next %}disabled{% endif %}">
+                        <a {% if courses.has_next %}
+                            href="?code={{ code }}&page={{ courses.next_page_number }}" {% endif %}>></a>
+                    </li>
+                    {% for course in courses.paginator.page_range reversed %}
+                    {% ifequal course courses.number %}
+                    <li class="active pull-right"><a href="#">{{ course }}</a></li>
+                    {% else %}
+                    <li class="pull-right"><a href="?code={{ code }}&page={{ course }}">{{ course }}</a></li>
+                    {% endifequal %}
+                    {% endfor %}
+                    <li class="pull-right {% if not courses.has_previous %}disabled{% endif %}">
+                        <a {% if courses.has_previous %}
+                            href="?code={{ code }}&page={{ courses.previous_page_number }}" {% endif %}><</a>
+                    </li>
+                    <li class="current hidden-xs">
+                        {% trans "Showing" %} {{ courses.start_index }}
+                        - {{ courses.end_index }} {% trans "of" %} [{{ courses.paginator.count }}]
+                    </li>
+                </ul>
+                {% endif %}
+            </section>
+
+            {% if verified %}
+                <section class="verified-info col-xs-12 col-md-4 col-lg-12">
+                    <p class="earn-verified-certificate col-xs-12 col-lg-5 pull-left-lg">{% trans "Earn a verified certificate in one of our popular courses to advance your career, showcase your accomplishments or enhance your college application." %}</p>
+
+                    <div class="verified-certificate-info clearfix">
+                        <h3 class="col-xs-12 col-sm-7 col-md-12 col-lg-4 pull-right-sm pull-right-lg">
+                            <b>{% trans "Why buy a verified certificate?" %}</b></h3>
+
+                        <div class="col-xs-12 col-sm-5 col-md-12 col-lg-3 pull-left-sm pull-left-lg">
+                            <img class="img-responsive" src="{% static "images/example-certificate-verified.png" %}"
+                                 alt="{% trans "certificate example" %}"/>
+                        </div>
+                        <div class="col-xs-12 col-sm-7 col-md-12 col-lg-4 pull-right-lg">
+                            <p>{% trans "A verified certificate demonstrates to future employers that you've mastered the course material." %}</p>
+
+                            <p>{% trans "The certificate is officially signed and stamped by the institution that offers the course." %}</p>
+
+                            <p>{% trans "You're twelve times more likely to complete the course if you're working toward a verified certificate." %}</p>
+                        </div>
+                    </div>
+                </section>
+            {% endif %}
+        </div>
+    </div>
     {% endif %}
+</div>
+
+{% if courses.0.analytics_data %}
+    <script type="text/javascript">
+        var initModelData = {{ courses.0.analytics_data|safe }};
+    </script>
+{% endif %}
 {% endblock %}
 
 {% block javascript %}

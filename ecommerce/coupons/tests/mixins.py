@@ -26,6 +26,11 @@ class CatalogPreviewMockMixin(object):
             'results': [{
                 'key': course_run.id,
                 'title': course_run.name,
+                "start": "2013-02-05T05:00:00Z",
+                "image": {
+                    "src": "http://127.0.0.1:8000/asset-v1:edX+DemoX+"
+                           "Demo_Course+type@asset+block@images_course_image.jpg"
+                }
             }] if course_run else [{
                 'key': 'test',
                 'title': 'Test course',
