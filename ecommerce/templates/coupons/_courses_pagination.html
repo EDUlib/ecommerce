@@ -1,0 +1,15 @@
+{% load i18n %}
+
+<ul class="pagination clearfix">
+    <li class="pull-right {% if not courses.has_next %}disabled{% endif %}">
+        <a {% if courses.has_next %}
+            href="?code={{ code }}&page={{ courses.next_page_number }}" {% endif %}>></a>
+    </li>
+    <li class="pull-right {% if not courses.has_previous %}disabled{% endif %}">
+        <a {% if courses.has_previous %}
+            href="?code={{ code }}&page={{ courses.previous_page_number }}" {% endif %}><</a>
+    </li>
+    <li class="pull-right current">
+        {% trans "Showing" %} {{ courses.start_index }} - {{ courses.end_index }} {% trans "of" %} [{{ courses.paginator.count }}]
+    </li>
+</ul>

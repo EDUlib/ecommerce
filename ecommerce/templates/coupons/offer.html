@@ -13,17 +13,13 @@
         {% if error %}
             {% include "coupons/_offer_error.html" %}
         {% else %}
-            {% if is_enrollment_code %}
-                {% include "coupons/_offer_enrollment.html" %}
-            {% else %}
-                {% include "coupons/_offer_discount.html" %}
-            {% endif %}
+            {% include  "coupons/_offer_landing_page.html" %}
         {% endif %}
     </div>
 
-    {% if analytics_data %}
+    {% if courses.0.analytics_data %}
         <script type="text/javascript">
-            var initModelData = {{ analytics_data|safe }};
+            var initModelData = {{ courses.0.analytics_data|safe }};
         </script>
     {% endif %}
 {% endblock %}

@@ -1,0 +1,106 @@
+{% load staticfiles %}
+{% load i18n %}
+
+<div class="container">
+    <div class="row">
+        <section class="col-xs-12 col-md-8 col-lg-12{% if courses|length == 1 %}col-lg-8 col-lg-offset-2{% endif %}">
+            <h3 class="number-of-products-header"><b>
+            {% if not courses.1 %}
+                {% if is_enrollment_code %}
+                    {% trans "You have 1 enrollment coupon available to you" %}
+                {% else %}
+                    {% trans "You have 1 coupon available to you" %}
+                {% endif %}
+            {% else %}
+                {% if is_enrollment_code %}
+                    {% trans "You have 10 enrollment coupons available to you" %}
+                {% else %}
+                    {% trans "You have 10 coupons available to you" %}
+                {% endif %}
+            {% endif %}
+            </b></h3>
+
+            {% if courses.has_other_pages %}
+                <div class="hidden-xs">
+                    {% include "coupons/_courses_pagination.html" %}
+                </div>
+            {% endif %}
+
+            {% for course in courses %}
+                <div class="discount-multiple-courses {% if not courses|length == 1 %}col-xs-12 col-lg-6{% endif %}">
+                    <div class="box-shadow col-xs-12">
+                        <div class="col-sm-5">
+                            <div class="image-container">
+                                <div class="discount-percentage"><p>{{ course.benefit_value }} <span>Off</span></p>
+                                </div>
+                                <img class="img-responsive" src="{{ course.image.src }}" alt="{{ course.title }}"/>
+
+                                <div class="voucher-valid-until">
+                                    <p>{% trans "Discount valid until" %} {{ voucher_valid_until|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-7 col-xs-12">
+                            <p class="course_name">{{ course.title }}</p>
+
+                            <p class="course_org">{{ course.org }}</p>
+
+                            <p class="course_start">{% trans "Course starts" %}:
+                                {{ course.start_date|date:"M d, Y" }}</p>
+
+                            <div class="discount-mc-price-group clearfix">
+                                <div class="pull-left">
+                                    <p class="course-price">{% trans "Was" %}
+                                        <span>${{ course.price|floatformat }}</span>
+                                    </p>
+                                </div>
+                                <div class="pull-left">
+                                    <p class="course-new-price">{% trans "Now" %}
+                                        <span>${{ course.new_price|floatformat }}</span>
+                                    </p>
+                                </div>
+                                <div class="pull-right">
+                                    {% if is_enrollment_code %}
+                                        <a href="{% url 'coupons:redeem' %}?code={{ code }}&sku={{ course.sku }}"
+                                           id="RedeemEnrollment"
+                                           class="btn btn-success">{% trans "Enroll and Redeem Code" %}</a>
+                                    {% else %}
+                                        <a href="{% url 'coupons:redeem' %}?code={{ code }}&sku={{ course.sku }}"
+                                           id="PurchaseCertificate"
+                                           class="btn btn-success btn-purchase"
+                                           data-track-type="click"
+                                           data-track-event="edx.bi.ecommerce.coupons.accept_offer"
+                                           data-track-category="coupon-codes"
+                                           data-course-id="{{ course.key }}">
+                                            {% trans "Get Certificate" %}
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if courses.has_other_pages %}
+                {% include "coupons/_courses_pagination.html"%}
+            {% endif %}
+        </section>
+
+        <section class="verified-info col-xs-12 col-md-4 col-lg-12">
+            <p class="earn-verified-certificate col-xs-12 col-lg-5 pull-left-lg">{% trans "Earn a verified certificate in one of our popular courses to advance your career, showcase your accomplishments or enhance your college application." %}</p>
+            <div class="verified-certificate-info clearfix">
+                <h3 class="col-xs-12 col-sm-7 col-md-12 col-lg-4 pull-right-sm pull-right-lg"><b>{% trans "Why buy a verified certificate?" %}</b></h3>
+                <div class="col-xs-12 col-sm-5 col-md-12 col-lg-3 pull-left-sm pull-left-lg">
+                    <img class="img-responsive" src="{% static "images/example-certificate-verified.png" %}"
+                         alt="{% trans "certificate example" %}"/>
+                </div>
+                <div class="col-xs-12 col-sm-7 col-md-12 col-lg-4 pull-right-lg">
+                    <p>{% trans "A verified certificate demonstrates to future employers that you've mastered the course material." %}</p>
+                    <p>{% trans "The certificate is officially signed and stamped by the institution that offers the course." %}</p>
+                    <p>{% trans "You're twelve times more likely to complete the course if you're working toward a verified certificate." %}</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

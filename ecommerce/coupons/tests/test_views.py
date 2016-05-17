@@ -2,11 +2,13 @@ import datetime
 
 import ddt
 import httpretty
+import mock
 import pytz
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
+from edx_rest_api_client.client import EdxRestApiClient
 from oscar.core.loading import get_class, get_model
 from oscar.test.factories import (
     ConditionalOfferFactory, OrderFactory, OrderLineFactory, RangeFactory, VoucherFactory
@@ -14,7 +16,8 @@ from oscar.test.factories import (
 from oscar.test.utils import RequestFactory
 
 from ecommerce.core.url_utils import get_lms_url, get_lms_enrollment_api_url
-from ecommerce.coupons.tests.mixins import CouponMixin
+from ecommerce.coupons.tests.mixins import CatalogPreviewMockMixin, CouponMixin
+from ecommerce.coupons.utils import get_course_catalog_api_client
 from ecommerce.coupons.views import get_voucher_from_code, voucher_is_valid
 from ecommerce.courses.tests.factories import CourseFactory
 from ecommerce.extensions.api import exceptions
@@ -68,7 +71,8 @@ class GetVoucherTests(TestCase):
     def test_get_voucher_from_code(self):
         """ Verify that get_voucher_from_code() returns product and voucher. """
         original_voucher, original_product = prepare_voucher(code=COUPON_CODE)
-        voucher, product = get_voucher_from_code(code=COUPON_CODE)
+        voucher, products = get_voucher_from_code(code=COUPON_CODE)
+        product = products[0]
 
         self.assertIsNotNone(voucher)
         self.assertEqual(voucher, original_voucher)
@@ -94,13 +98,13 @@ class GetVoucherTests(TestCase):
         """ Verify voucher_is_valid() assess that the voucher is valid. """
         voucher, product = prepare_voucher(code=COUPON_CODE)
         request = RequestFactory().request()
-        valid, msg = voucher_is_valid(voucher=voucher, product=product, request=request)
+        valid, msg = voucher_is_valid(voucher=voucher, products=[product], request=request)
         self.assertTrue(valid)
         self.assertEquals(msg, '')
 
     def test_no_voucher(self):
         """ Verify voucher_is_valid() assess that the voucher is invalid. """
-        valid, msg = voucher_is_valid(voucher=None, product=None, request=None)
+        valid, msg = voucher_is_valid(voucher=None, products=None, request=None)
         self.assertFalse(valid)
         self.assertEqual(msg, _('Coupon does not exist'))
 
@@ -109,7 +113,7 @@ class GetVoucherTests(TestCase):
         start_datetime = now() - datetime.timedelta(days=20)
         end_datetime = now() - datetime.timedelta(days=10)
         voucher, product = prepare_voucher(code=COUPON_CODE, start_datetime=start_datetime, end_datetime=end_datetime)
-        valid, msg = voucher_is_valid(voucher=voucher, product=product, request=None)
+        valid, msg = voucher_is_valid(voucher=voucher, products=product, request=None)
         self.assertFalse(valid)
         self.assertEqual(msg, _('This coupon code has expired.'))
 
@@ -118,7 +122,7 @@ class GetVoucherTests(TestCase):
         start_datetime = now() + datetime.timedelta(days=10)
         end_datetime = now() + datetime.timedelta(days=20)
         voucher, product = prepare_voucher(code=COUPON_CODE, start_datetime=start_datetime, end_datetime=end_datetime)
-        valid, msg = voucher_is_valid(voucher=voucher, product=product, request=None)
+        valid, msg = voucher_is_valid(voucher=voucher, products=[product], request=None)
         self.assertFalse(valid)
         self.assertEqual(msg, _('This coupon code is not yet valid.'))
 
@@ -127,7 +131,7 @@ class GetVoucherTests(TestCase):
         request = RequestFactory().request()
         voucher, product = prepare_voucher(code=COUPON_CODE)
         product.expires = pytz.utc.localize(datetime.datetime.min)
-        valid, __ = voucher_is_valid(voucher=voucher, product=product, request=request)
+        valid, __ = voucher_is_valid(voucher=voucher, products=[product], request=request)
         self.assertFalse(valid)
 
     def assert_error_messages(self, voucher, product, user, error_msg):
@@ -135,7 +139,7 @@ class GetVoucherTests(TestCase):
         voucher.offers.first().record_usage(discount={'freq': 1, 'discount': 1})
         request = RequestFactory().request()
         request.user = user
-        valid, msg = voucher_is_valid(voucher=voucher, product=product, request=request)
+        valid, msg = voucher_is_valid(voucher=voucher, products=[product], request=request)
         self.assertFalse(valid)
         self.assertEqual(msg, error_msg)
 
@@ -159,14 +163,14 @@ class GetVoucherTests(TestCase):
         """ Verify the coupon is valid for anonymous users. """
         voucher, product = prepare_voucher(usage=Voucher.ONCE_PER_CUSTOMER)
         request = RequestFactory().request()
-        valid, msg = voucher_is_valid(voucher=voucher, product=product, request=request)
+        valid, msg = voucher_is_valid(voucher=voucher, products=[product], request=request)
         self.assertTrue(valid)
         self.assertEqual(msg, '')
 
 
 @httpretty.activate
 @ddt.ddt
-class CouponOfferViewTests(CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
+class CouponOfferViewTests(CourseCatalogTestMixin, CatalogPreviewMockMixin, LmsApiMockMixin, TestCase):
     path = reverse('coupons:offer')
     path_with_code = '{path}?code={code}'.format(path=path, code=COUPON_CODE)
 
@@ -177,14 +181,18 @@ class CouponOfferViewTests(CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
 
     def prepare_course_information(self):
         """ Helper function to prepare an API endpoint that provides course information. """
-        course = CourseFactory(name='Test course')
-        seat = course.create_or_update_seat('verified', True, 50, self.partner)
-        stock_record = StockRecord.objects.get(product=seat)
+        course, __, stock_record = self.prepare_stock_record()
         catalog = Catalog.objects.create(name='Test catalog', partner=self.partner)
         catalog.stock_records.add(stock_record)
         _range = RangeFactory(catalog=catalog)
         self.mock_course_api_response(course=course)
         return _range
+
+    def prepare_stock_record(self, course_name='Test course'):
+        course = CourseFactory(name=course_name)
+        seat = course.create_or_update_seat('verified', True, 50, self.partner)
+        stock_record = StockRecord.objects.get(product=seat)
+        return course, seat, stock_record
 
     def test_no_code(self):
         """ Verify a proper response is returned when no code is supplied. """
@@ -232,12 +240,29 @@ class CouponOfferViewTests(CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
         ).format(course.id)
         self.assertEqual(response.context['error'], _(response_text))
 
+    @mock.patch(
+        'ecommerce.coupons.views.get_course_catalog_api_client',
+        mock.Mock(return_value=EdxRestApiClient(
+            settings.COURSE_CATALOG_API_URL,
+            jwt='auth-token'
+        ))
+    )
+    @mock.patch(
+        'ecommerce.coupons.utils.get_course_catalog_api_client',
+        mock.Mock(return_value=EdxRestApiClient(
+            settings.COURSE_CATALOG_API_URL,
+            jwt='auth-token'
+        ))
+    )
     def test_proper_code(self):
         """ Verify that proper information is returned when a valid code is provided. """
-        _range = self.prepare_course_information()
+        catalog_query = 'key=*'
+        course, __, stock_record = self.prepare_stock_record()
+        self.mock_dynamic_catalog_course_runs_api(query=catalog_query, course_run=course)
+        _range = RangeFactory(catalog_query=catalog_query, course_seat_types='verified')
         prepare_voucher(code=COUPON_CODE, _range=_range)
         response = self.client.get(self.path_with_code)
-        self.assertEqual(response.context['course']['name'], _('Test course'))
+        self.assertEqual(response.context['courses'][0]['title'], _('Test course'))
         self.assertEqual(response.context['code'], COUPON_CODE)
 
     @ddt.data(
@@ -250,7 +275,39 @@ class CouponOfferViewTests(CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
         _range = self.prepare_course_information()
         prepare_voucher(code=COUPON_CODE, _range=_range, benefit_value=benefit_value, benefit_type=Benefit.FIXED)
         response = self.client.get(self.path_with_code)
-        self.assertEqual(response.context['new_price'], new_price)
+        self.assertEqual(response.context['course']['new_price'], new_price)
+
+    def test_multiple_products(self):
+        """ Verify CouponOfferView works for multiple products. """
+        course1, __, stock_record1 = self.prepare_stock_record()
+        course2, __, stock_record2 = self.prepare_stock_record('Test course2')
+        catalog = Catalog.objects.create(name='Test catalog', partner=self.partner)
+        catalog.stock_records.add(stock_record1, stock_record2)
+        _range = RangeFactory(catalog=catalog)
+        prepare_voucher(code=COUPON_CODE, _range=_range)
+        self.mock_course_api_response(course=course1)
+        self.mock_course_api_response(course=course2)
+        response = self.client.get(self.path_with_code)
+        self.assertEqual(response.context['courses'][0]['name'], _('Test course'))
+        self.assertEqual(response.context['courses'][1]['name'], _('Test course2'))
+
+    def test_multiple_products_information_error(self):
+        """ Verify CouponOfferView returns response when no information available for one course in multiple products"""
+        course1, seat1, __ = self.prepare_stock_record()
+        course2, seat2, __ = self.prepare_stock_record('Test course2')
+        seat1 = course1.create_or_update_seat('verified', True, 50, self.partner)
+        seat2 = course2.create_or_update_seat('verified', True, 50, self.partner)
+        _range = RangeFactory(products=[seat1, seat2])
+        prepare_voucher(code=COUPON_CODE, _range=_range)
+        course_url = get_lms_url('api/courses/v1/courses/{}/'.format(course1.id))
+        httpretty.register_uri(httpretty.GET, course_url, status=404, content_type=CONTENT_TYPE)
+        self.mock_course_api_response(course=course2)
+        response = self.client.get(self.path_with_code)
+        response_text = (
+            'Could not get course information. '
+            '[Client Error 404: http://lms.testserver.fake/api/courses/v1/courses/{}/]'
+        ).format(course1.id)
+        self.assertEqual(response.context['error'], _(response_text))
 
 
 class CouponRedeemViewTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
