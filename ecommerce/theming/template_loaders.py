@@ -7,7 +7,7 @@ from django.template.loaders.filesystem import Loader as FilesystemLoader
 
 from threadlocals.threadlocals import get_current_request
 
-from ecommerce.theming.helpers import get_current_theme_template_dirs, get_all_theme_template_dirs
+from ecommerce.theming.helpers import get_current_theme, get_all_theme_template_dirs
 
 
 class ThemeTemplateLoader(FilesystemLoader):
@@ -51,4 +51,5 @@ class ThemeTemplateLoader(FilesystemLoader):
             return get_all_theme_template_dirs()
         else:
             # template is being accessed by a view, so return templates sources for current theme
-            return get_current_theme_template_dirs()
+            theme = get_current_theme()
+            return theme and theme.template_dirs
