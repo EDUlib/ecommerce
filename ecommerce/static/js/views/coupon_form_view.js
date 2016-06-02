@@ -420,6 +420,7 @@ define([
                     this.toggleVoucherTypeField();
                     this.toggleCodeField();
                     this.toggleQuantityField();
+                    this.$el.find('.catalog-query').addClass('editing');
                     this.$el.find('button[type=submit]').html(gettext('Save Changes'));
                     this.fillFromCourse();
                 } else {
@@ -432,6 +433,7 @@ define([
                     this.model.set('catalog_type', 'Single course');
                     this.$el.find('[name=benefit_value]').attr('max', 100);
                     this.$el.find('button[type=submit]').html(gettext('Create Coupon'));
+                    this.$el.find('.catalog-query').removeClass('editing');
                 }
 
                 // Add date picker

@@ -23,7 +23,11 @@
     }
 
     .catalog-query {
-        margin-bottom: 18px;
+        margin-bottom: 10px;
+
+        &.editing {
+            margin-bottom: 30px;
+        }
 
         p {
             margin-bottom: 20px;
@@ -33,13 +37,23 @@
             margin-top: 10px;
             margin-right: 10px;
         }
+
+        textarea {
+            height: 216px;
+        }
     }
 
     .course-seat-types {
         margin-bottom: 27px;
+        height: 154px;
 
         .form-inline label {
+            margin-bottom: 10px;
             padding-right: 10px;
+        }
+
+        .checkboxes {
+            margin-bottom: 25px;
         }
 
         .catalog-buttons {
