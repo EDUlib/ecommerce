@@ -67,6 +67,23 @@ define([
                     model.validate();
                     expect(model.isValid()).toBeTruthy();
                 });
+
+                it('should validate catalog query and course seat types for Multiple Courses Catalog', function () {
+                    model.set('catalog_type', 'Multiple courses');
+                    model.set('catalog_query', '');
+                    model.validate();
+                    expect(model.isValid()).toBeFalsy();
+
+                    model.set('catalog_query', '*:*');
+                    model.set('course_seat_types', []);
+                    model.validate();
+                    expect(model.isValid()).toBeFalsy();
+
+                    model.set('catalog_query', '*:*');
+                    model.set('course_seat_types', ['verified']);
+                    model.validate();
+                    expect(model.isValid()).toBeTruthy();
+                });
             });
 
             describe('test model methods', function () {

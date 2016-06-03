@@ -53,10 +53,9 @@ define(['jquery',
             },
 
             getHelpWithCatalog: function (event) {
-                var url = 'https://stage-edx-discovery.edx.org/';
                 event.preventDefault();
 
-                window.open(url, '_blank');
+                window.open(_s.sprintf('%s:8008', window.location.host), '_blank');
             },
 
             filterCourses: function (course_keys, seat_types) {

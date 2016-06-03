@@ -23,7 +23,8 @@ define([
         _.extend(Backbone.Validation.messages, {
             required: gettext('This field is required'),
             number: gettext('This value must be a number'),
-            date: gettext('This value must be a date')
+            date: gettext('This value must be a date'),
+            seat_types: gettext('Seat type must be selected'),
         });
         _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
 
@@ -40,6 +41,7 @@ define([
                 max_uses: 1,
                 seats: [],
                 course_seats: [],
+                course_seat_types: []
             },
 
             validation: {
@@ -75,6 +77,11 @@ define([
                 catalog_query: {
                     required: function () {
                         return this.get('catalog_type') === 'Multiple courses';
+                    }
+                },
+                course_seat_types: function (val) {
+                    if (val.length === 0 && this.get('catalog_type') === 'Multiple courses') {
+                        return Backbone.Validation.messages.seat_types;
                     }
                 },
                 start_date: function (val) {

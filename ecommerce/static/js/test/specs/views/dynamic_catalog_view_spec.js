@@ -112,7 +112,7 @@ define([
                 view.getHelpWithCatalog(e);
 
                 expect(e.preventDefault).toHaveBeenCalled();
-                expect(window.open).toHaveBeenCalledWith('https://stage-edx-discovery.edx.org/', '_blank');
+                expect(window.open).toHaveBeenCalledWith(window.location.host + ':8008', '_blank');
             });
 
             it('should filter courses by calling filterCourses function', function() {
