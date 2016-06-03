@@ -33,7 +33,7 @@ def get_seats_from_query(site, query, seat_types):
     return query_products
 
 
-def prepare_course_seat_types(self, course_seat_types):
+def prepare_course_seat_types(course_seat_types):
     """
     Convert list of course seat types into comma-separated string.
     Arguments:
