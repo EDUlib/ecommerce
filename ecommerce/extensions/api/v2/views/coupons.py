@@ -15,6 +15,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from ecommerce.core.models import BusinessClient, User
+from ecommerce.coupons.utils import prepare_course_seat_types
 from ecommerce.extensions.api import data as data_api
 from ecommerce.extensions.api.constants import APIConstants as AC
 from ecommerce.extensions.api.filters import ProductFilter
@@ -51,18 +52,6 @@ class CouponViewSet(EdxOrderPlacementMixin, viewsets.ModelViewSet):
         if self.action == 'list':
             return CouponListSerializer
         return CouponSerializer
-
-    def _prepare_course_seat_types(self, course_seat_types):
-        """
-        Convert list of course seat types into comma-separated string.
-        Arguments:
-            course_seat_types (list): List of course seat types
-        Returns:
-            Comma-separated string.
-        """
-        if course_seat_types:
-            return ','.join(seat_type.lower() for seat_type in course_seat_types)
-        return course_seat_types
 
     def create(self, request, *args, **kwargs):
         """Adds coupon to the user's basket.
@@ -101,7 +90,7 @@ class CouponViewSet(EdxOrderPlacementMixin, viewsets.ModelViewSet):
             note = request.data.get('note', None)
             max_uses = request.data.get('max_uses', None)
             catalog_query = request.data.get(AC.KEYS.CATALOG_QUERY, None)
-            course_seat_types = self._prepare_course_seat_types(request.data.get(AC.KEYS.COURSE_SEAT_TYPES, None))
+            course_seat_types = prepare_course_seat_types(request.data.get(AC.KEYS.COURSE_SEAT_TYPES, None))
 
             # Maximum number of uses can be set for each voucher type and disturb
             # the predefined behaviours of the different voucher types. Therefor
@@ -359,7 +348,7 @@ class CouponViewSet(EdxOrderPlacementMixin, viewsets.ModelViewSet):
         """
         value = request_data.get(request_data_key, '')
         if value:
-            update_dict[update_dict_key] = self._prepare_course_seat_types(value) \
+            update_dict[update_dict_key] = prepare_course_seat_types(value) \
                 if update_dict_key == AC.KEYS.COURSE_SEAT_TYPES else value
 
     def update_coupon_benefit_value(self, benefit_value, vouchers, coupon):
