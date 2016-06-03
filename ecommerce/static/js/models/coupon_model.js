@@ -21,10 +21,10 @@ define([
         'use strict';
 
         _.extend(Backbone.Validation.messages, {
-            required: gettext('This field is required'),
-            number: gettext('This value must be a number'),
-            date: gettext('This value must be a date'),
-            seat_types: gettext('Seat type must be selected'),
+            required: gettext('This field is required.'),
+            number: gettext('This value must be a number.'),
+            date: gettext('This value must be a date.'),
+            seat_types: gettext('At least one seat type must be selected.'),
         });
         _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
 
