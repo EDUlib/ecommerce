@@ -15,12 +15,10 @@ define(['jquery',
             template: _.template(DynamicCatalogButtons),
 
             events: {
-                'click [name=preview_catalog]': 'previewCatalog',
-                'click [name=catalog_help]': 'getHelpWithCatalog',
+                'click [name=preview_catalog]': 'previewCatalog'
             },
 
             initialize: function (options) {
-                this.creating_editing = options.creating_editing || false;
                 this.query = options.query;
                 this.seat_types = options.seat_types;
 
@@ -50,12 +48,6 @@ define(['jquery',
                     },
                     success: this.onSuccess
                 });
-            },
-
-            getHelpWithCatalog: function (event) {
-                event.preventDefault();
-
-                window.open(_s.sprintf('%s:8008', window.location.host), '_blank');
             },
 
             filterCourses: function (course_keys, seat_types) {
@@ -94,7 +86,7 @@ define(['jquery',
             },
 
             render: function () {
-                this.$el.html(this.template({'creating_editing': this.creating_editing}));
+                this.$el.html(this.template({}));
                 return this;
             }
         });

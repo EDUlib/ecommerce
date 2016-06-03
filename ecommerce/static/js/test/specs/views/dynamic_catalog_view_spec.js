@@ -31,13 +31,6 @@ define([
                 expect(view.previewCatalog).toHaveBeenCalled();
             });
 
-            it('should call get help with catalog if help button was clicked', function () {
-                spyOn(view, 'getHelpWithCatalog');
-                view.delegateEvents();
-                view.$el.find('[name=catalog_help]').trigger('click');
-                expect(view.getHelpWithCatalog).toHaveBeenCalled();
-            });
-
             it('should format row data for dynamic catalog preview', function () {
                 var course = Course.findOrCreate({
                         'id': 'a/b/c',
@@ -102,17 +95,6 @@ define([
                     {title: 'Course name', data: 'name'},
                     {title: 'Seat type', data: 'type'}
                 ]);
-            });
-
-            it('should open help link in a new tab when getHelpWithCatalog is called', function() {
-                var e = $.Event('click');
-                spyOn(e, 'preventDefault');
-                spyOn(window, 'open');
-
-                view.getHelpWithCatalog(e);
-
-                expect(e.preventDefault).toHaveBeenCalled();
-                expect(window.open).toHaveBeenCalledWith(window.location.host + ':8008', '_blank');
             });
 
             it('should filter courses by calling filterCourses function', function() {

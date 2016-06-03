@@ -188,7 +188,6 @@ define([
                 this.hiddenClass = 'hidden';
 
                 this.dynamic_catalog_view = new DynamicCatalogView({
-                    'creating_editing': true,
                     'query': this.model.get('catalog_query'),
                     'seat_types': this.model.get('course_seat_types')
                 });
