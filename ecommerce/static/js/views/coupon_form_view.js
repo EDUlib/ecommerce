@@ -93,25 +93,21 @@ define([
                     }
                 },
                 'input[name=benefit_type]': {
-                    observe: 'benefit_type',
-                    onGet: function (val) {
-                        if (val === 'Percentage') {
-                            return val;
-                        } else if (val === 'Absolute') {
-                            return 'Absolute';
-                        }
-                        return '';
-                    }
+                    observe: 'benefit_type'
                 },
                 '.benefit-addon': {
                     observe: 'benefit_type',
                     onGet: function (val) {
-                        if (val === 'Percentage') {
-                            return '%';
-                        } else if (val === 'Absolute') {
-                            return '$';
-                        }
-                        return '';
+                        return this.toggleBenefitTypeIcon(val);
+                    }
+                },
+                'input[name=discount_type]': {
+                    observe: 'discount_type'
+                },
+                '.discount-addon': {
+                    observe: 'discount_type',
+                    onGet: function (val) {
+                        return this.toggleBenefitTypeIcon(val);
                     }
                 },
                 'input[name=benefit_value]': {
@@ -163,6 +159,8 @@ define([
                 'blur [name=course_id]': 'fillFromCourse',
                 'change [name=seat_type]': 'changeSeatType',
                 'change [name=benefit_type]': 'changeUpperLimitForBenefitValue',
+                'change [name=invoicing_type]': 'toggleInvoiceFields',
+                'change [name=tax_deducted_source]': 'toggleTaxDeductedSourceField'
             },
 
             initialize: function (options) {
@@ -173,6 +171,7 @@ define([
                 this.listenTo(this.model, 'change:coupon_type', this.toggleCouponTypeField);
                 this.listenTo(this.model, 'change:voucher_type', this.toggleVoucherTypeField);
                 this.listenTo(this.model, 'change:code', this.toggleCodeField);
+                this.listenTo(this.model, 'change:quantity', this.toggleQuantityField);
                 this.listenTo(this.model, 'change:quantity', this.toggleQuantityField);
 
                 this._super();
@@ -191,6 +190,16 @@ define([
 
             emptyCodeField: function () {
                 this.model.set('code', '');
+            },
+
+            toggleBenefitTypeIcon: function (val) {
+                if (val === 'Percentage') {
+                    return '%';
+                } else if (val === 'Absolute') {
+                    return '$';
+                } else {
+                    return '';
+                }
             },
 
             /**
@@ -237,6 +246,26 @@ define([
                     this.formGroup('[name=quantity]').removeClass(this.hiddenClass);
                 } else {
                     this.formGroup('[name=quantity]').addClass(this.hiddenClass);
+                }
+            },
+
+            toggleInvoiceFields: function () {
+                var invoicing_type = this.$el.find('[name=invoicing_type]:checked').val();
+                if (invoicing_type === 'Postpaid') {
+                    this.formGroup('[name^=invoice_]').addClass(this.hiddenClass);
+                    this.formGroup('[name=discount_value]').removeClass(this.hiddenClass);
+                } else if (invoicing_type === 'Prepaid') {
+                    this.formGroup('[name^=invoice_]').removeClass(this.hiddenClass);
+                    this.formGroup('[name=discount_value]').addClass(this.hiddenClass);
+                }
+            },
+
+            toggleTaxDeductedSourceField: function() {
+                var tax_deducted_source = this.$el.find('[name=tax_deducted_source]:checked').val();
+                if (tax_deducted_source === 'Yes') {
+                    this.formGroup('[name=tax_deduction_percentage]').removeClass(this.hiddenClass);
+                } else if (tax_deducted_source === 'No') {
+                    this.formGroup('[name=tax_deduction_percentage]').addClass(this.hiddenClass);
                 }
             },
 

@@ -1,20 +1,25 @@
 .coupon-create-edit-view {
-    .benefit-type label {
+    .benefit-type label,
+    .invoice-type label,
+    .discount-type label,
+    .tax_deducted_source label {
         font-weight: normal;
     }
-    .benefit-addon {
+
+    .benefit-addon,
+    .discount-addon {
         width: 40px;
     }
     input[name="benefit_value"] {
         width: 174px;
     }
 
-    .invoicing label {
-        font-weight: normal;
-    }
-
     .help-block {
         margin: 0;
+    }
+
+    .tax_deduction_percentage {
+        width: 174px;
     }
 }
 
