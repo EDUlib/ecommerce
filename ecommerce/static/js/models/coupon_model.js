@@ -80,7 +80,7 @@ define([
                     }
                 },
                 course_seat_types: function (val) {
-                    if (val.length === 0 && this.get('catalog_type') === 'Multiple courses') {
+                    if (this.get('catalog_type') === 'Multiple courses' && val.length === 0) {
                         return Backbone.Validation.messages.seat_types;
                     }
                 },
