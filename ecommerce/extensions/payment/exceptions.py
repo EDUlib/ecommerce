@@ -22,6 +22,9 @@ class InvalidCybersourceDecision(GatewayError):
     pass
 
 
+class InvalidNetbanxDecision(GatewayError):
+    """The decision returned by CyberSource was not recognized."""
+    pass
 class PartialAuthorizationError(PaymentError):
     """The amount authorized by the payment processor differs from the requested amount."""
     pass

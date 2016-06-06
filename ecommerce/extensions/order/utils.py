@@ -102,13 +102,5 @@ class OrderCreator(OscarOrderCreator):
         order = Order(**order_data)
         order.save()
 
-        try:
-            referral = Referral.objects.get(basket=basket)
-            referral.order = order
-            referral.save()
-        except Referral.DoesNotExist:
-            logger.debug('Order [%d] has no referral associated with its basket.', order.id)
-        except Exception:  # pylint: disable=broad-except
-            logger.exception('Referral for Order [%d] failed to save.', order.id)
 
         return order
