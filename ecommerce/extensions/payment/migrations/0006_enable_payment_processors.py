@@ -6,6 +6,7 @@ from django.db import migrations, models
 
 from ecommerce.extensions.payment.processors.cybersource import Cybersource
 from ecommerce.extensions.payment.processors.paypal import Paypal
+from ecommerce.extensions.payment.processors.netbanx import Netbanx
 
 
 def enable_payment_processors(apps, schema_editor):
@@ -13,7 +14,7 @@ def enable_payment_processors(apps, schema_editor):
     Enable both existing payment processors.
     """
     Switch = apps.get_model('waffle', 'Switch')
-    for processor in (Cybersource, Paypal):
+    for processor in (Cybersource, Paypal, Netbanx):
         Switch(name=settings.PAYMENT_PROCESSOR_SWITCH_PREFIX + processor.NAME, active=True).save()
 
 
