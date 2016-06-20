@@ -300,6 +300,17 @@ class Cybersource(BasePaymentProcessor):
 
     def issue_credit(self, order, reference_number, amount, currency):
         try:
+####### FICUS
+####### FICUS
+######## EUCALYPTUS
+            order_request_token = source.reference
+            
+            # Added by EDUlib
+            #print("entering cybersource refund")
+            #print("order_request_token = %s", order_request_token)
+            # Added by EDUlib
+
+######## EUCALYPTUS
             security = Security()
             token = UsernameToken(self.merchant_id, self.transaction_key)
             security.tokens.append(token)
@@ -309,17 +320,41 @@ class Cybersource(BasePaymentProcessor):
 
             credit_service = client.factory.create('ns0:CCCreditService')
             credit_service._run = 'true'  # pylint: disable=protected-access
-            credit_service.captureRequestID = reference_number
+####### FICUS
+#######            credit_service.captureRequestID = reference_number
+####### FICUS
+######## EUCALYPTUS
+            credit_service.captureRequestID = source.reference
+            # Added by EDUlib
+            #print("credit_service.captureRequestID = %s", credit_service.captureRequestID)
+            # Added by EDUlib
+######## EUCALYPTUS
 
             purchase_totals = client.factory.create('ns0:PurchaseTotals')
             purchase_totals.currency = currency
             purchase_totals.grandTotalAmount = unicode(amount)
+            # Added by EDUlib
+            #print("purchase_totals.currency = %s", purchase_totals.currency)
+            #print("purchase_totals.grandTotalAmount = %s", purchase_totals.grandTotalAmount)
+            # Added by EDUlib
 
+            # Added by EDUlib
+            #print("before client.service.runTransaction")
+            #print("self.merchant_id = %s", self.merchant_id)
+            #print("order.number = %s", order.number)
+            #print("order_request_token = %s", order_request_token)
+            #print("credit_service = %s", credit_service)
+            #print("purchase_totals = %s", purchase_totals)
+            # Added by EDUlib
             response = client.service.runTransaction(merchantID=self.merchant_id, merchantReferenceCode=order.number,
                                                      orderRequestToken=reference_number,
                                                      ccCreditService=credit_service,
                                                      purchaseTotals=purchase_totals)
             request_id = response.requestID
+            # Added by EDUlib
+            #print("after client.service.runTransaction")
+            #print("request_id = %s", request_id)
+            # Added by EDUlib
             ppr = self.record_processor_response(suds_response_to_dict(response), transaction_id=request_id,
                                                  basket=order.basket)
         except:
