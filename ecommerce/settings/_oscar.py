@@ -94,13 +94,13 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-# Modified by EDUlib
+# Modified by EDUlib, switched from USD to CAD
 OSCAR_DEFAULT_CURRENCY = 'CAD'
 # END ORDER PROCESSING
 
 
 # PAYMENT PROCESSING
-# Modified by EDUlib
+# Modified by EDUlib, added a line for Netbanx
 PAYMENT_PROCESSORS = (
     'ecommerce.extensions.payment.processors.cybersource.Cybersource',
     'ecommerce.extensions.payment.processors.paypal.Paypal',
@@ -133,9 +133,9 @@ PAYMENT_PROCESSOR_CONFIG = {
             'error_path': PAYMENT_PROCESSOR_ERROR_PATH,
         },
         'netbanx': {
-            'api_key': 'xxxxxxxxxxx',
-            'api_password': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-            'account_number': 'xxxxxxxxxx',
+            'api_key': 'fake-api-key',
+            'api_password': 'fake-api-password',
+            'account_number': 'fake-account-number',
             'environment': 'TEST',
             'receipt_path': PAYMENT_PROCESSOR_RECEIPT_PATH,
             'cancel_path': PAYMENT_PROCESSOR_CANCEL_PATH,
