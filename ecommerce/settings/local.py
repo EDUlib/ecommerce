@@ -102,6 +102,16 @@ PAYMENT_PROCESSOR_CONFIG = {
             'cancel_checkout_path': PAYMENT_PROCESSOR_CANCEL_PATH,
             'error_path': PAYMENT_PROCESSOR_ERROR_PATH,
         },
+        'netbanx': {
+            'api_key': 'xxxxxxxxxxx',
+            'api_password': 'xxxxxxxxxxxxxxx',
+            'account_number': 'xxxxxxxxxxx',
+            'environment': 'TEST',
+            'receipt_path': PAYMENT_PROCESSOR_RECEIPT_PATH,
+            'cancel_path': PAYMENT_PROCESSOR_CANCEL_PATH,
+            'ecommerce_path': 'http://test-commerce.edulib.org:8002',
+        },
+        
     },
 }
 # END PAYMENT PROCESSING
