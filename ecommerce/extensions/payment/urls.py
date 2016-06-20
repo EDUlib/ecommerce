@@ -5,6 +5,7 @@ from ecommerce.extensions.payment.views import cybersource, PaymentFailedView
 from ecommerce.extensions.payment.views.paypal import PaypalPaymentExecutionView, PaypalProfileAdminView
 
 urlpatterns = [
+    url(r'^paysafe/notify/page.html$', views.PaysafeNotifyView.as_view(), name='paysafe_notify'),
     url(r'^cybersource/notify/$', cybersource.CybersourceNotifyView.as_view(), name='cybersource_notify'),
     url(r'^cybersource/redirect/$', cybersource.CybersourceInterstitialView.as_view(), name='cybersource_redirect'),
     url(r'^cybersource/submit/$', cybersource.CybersourceSubmitView.as_view(), name='cybersource_submit'),
