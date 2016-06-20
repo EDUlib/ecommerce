@@ -27,9 +27,11 @@ class InvalidCybersourceDecision(GatewayError):
     """The decision returned by CyberSource was not recognized."""
     pass
 
+# Added by EDUlib
 class InvalidNetbanxDecision(GatewayError):
     """The decision returned by Netbanx was not recognized."""
     pass
+# Added by EDUlib
 
 class PartialAuthorizationError(PaymentError):
     """The amount authorized by the payment processor differs from the requested amount."""
