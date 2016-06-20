@@ -58,6 +58,11 @@ class OrderNumberGenerator(object):
         Returns:
             int: The basket ID used to generate the provided order number.
         """
+        
+        # Added by EDUlib
+        #logger.info("order_number is %s", order_number)
+        # Added by EDUlib
+
         order_id = int(order_number.split('-')[1])
         return order_id - self.OFFSET
 
@@ -72,12 +77,28 @@ class OrderCreator(OscarOrderCreator):
         site is used. The site value can be overridden by setting the `site` kwarg.
         """
 
+        # Added by EDUlib
+        #print("---------------------------")
+        #print("Entering create_order_model")
+        #print("---------------------------")
+        # Added by EDUlib
+
         # If a site was not passed in with extra_order_fields,
         # use the basket's site if it has one, else get the site
         # from the current request.
         site = basket.site
         if not site:
             site = get_current_request().site
+            
+        # Added by EDUlib
+        #print("===== valeur de site =====")
+        #print(site)
+        #print("===== valeur de site =====")
+
+        #print("===== valeur de total =====")
+        #print(total)
+        #print("===== valeur de total =====")
+        # Added by EDUlib
 
         order_data = {'basket': basket,
                       'number': order_number,
@@ -101,14 +122,21 @@ class OrderCreator(OscarOrderCreator):
             order_data.update(extra_order_fields)
         order = Order(**order_data)
         order.save()
+        
+        # Added by EDUlib
+        #print("--------------------------")
+        #print("Leaving create_order_model")
+        #print("--------------------------")
+        # Added by EDUlib
 
-        try:
-            referral = Referral.objects.get(basket=basket)
-            referral.order = order
-            referral.save()
-        except Referral.DoesNotExist:
-            logger.debug('Order [%d] has no referral associated with its basket.', order.id)
-        except Exception:  # pylint: disable=broad-except
-            logger.exception('Referral for Order [%d] failed to save.', order.id)
+        # not in the version of ecommerce we tried
+        #try:
+        #    referral = Referral.objects.get(basket=basket)
+        #    referral.order = order
+        #    referral.save()
+        #except Referral.DoesNotExist:
+        #    logger.debug('Order [%d] has no referral associated with its basket.', order.id)
+        #except Exception:  # pylint: disable=broad-except
+        #    logger.exception('Referral for Order [%d] failed to save.', order.id)
 
         return order
