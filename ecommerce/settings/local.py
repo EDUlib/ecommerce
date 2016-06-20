@@ -62,6 +62,7 @@ INTERNAL_IPS = ('127.0.0.1',)
 
 
 # AUTHENTICATION
+# Added by EDUlib, JWT_SECRET_KEY and JWT_ISSUERS need to be changed
 JWT_AUTH.update({
     'JWT_SECRET_KEY': 'insecure-secret-key',
     'JWT_ISSUERS': (
@@ -72,15 +73,19 @@ JWT_AUTH.update({
 })
 # END AUTHENTICATION
 
+# Added by EDUlib, the following line needs to be added
+ECOMMERCE_URL_ROOT = 'http://test-commerce.edulib.org:8002'
 
 # ORDER PROCESSING
 ENROLLMENT_FULFILLMENT_TIMEOUT = 15  # devstack is slow!
 
+# Added by EDUlib, EDX_API_KEY needs to be changed
 EDX_API_KEY = 'replace-me'
 # END ORDER PROCESSING
 
 
 # PAYMENT PROCESSING
+# Added by EDUlib, parameters for cybersource, paypal and netbanx need to be changed
 PAYMENT_PROCESSOR_CONFIG = {
     'edx': {
         'cybersource': {
@@ -92,8 +97,14 @@ PAYMENT_PROCESSOR_CONFIG = {
             'secret_key': 'fake-secret-key',
             'payment_page_url': 'https://testsecureacceptance.cybersource.com/pay',
             'receipt_path': PAYMENT_PROCESSOR_RECEIPT_PATH,
-            'cancel_checkout_path': PAYMENT_PROCESSOR_CANCEL_PATH,
-            'send_level_2_3_details': True,
+####### FICUS
+            ######## 'cancel_checkout_path': PAYMENT_PROCESSOR_CANCEL_PATH,
+            ######## 'send_level_2_3_details': True,
+####### FICUS
+####### EUCALYPTUS
+            'cancel_path': PAYMENT_PROCESSOR_CANCEL_PATH,
+            'send_level_2_3_details': False,
+####### EUCALYPTUS
         },
         'paypal': {
             'mode': 'sandbox',
@@ -104,9 +115,9 @@ PAYMENT_PROCESSOR_CONFIG = {
             'error_path': PAYMENT_PROCESSOR_ERROR_PATH,
         },
         'netbanx': {
-            'api_key': 'xxxxxxxxxxx',
-            'api_password': 'xxxxxxxxxxxxxxx',
-            'account_number': 'xxxxxxxxxxx',
+            'api_key': 'fake-api-key',
+            'api_password': 'fake-api-password',
+            'account_number': 'fake-account-number',
             'environment': 'TEST',
             'receipt_path': PAYMENT_PROCESSOR_RECEIPT_PATH,
             'cancel_path': PAYMENT_PROCESSOR_CANCEL_PATH,
