@@ -12,7 +12,7 @@ from ecommerce.extensions.payment.processors.netbanx import Netbanx
 
 def enable_payment_processors(apps, schema_editor):
     """
-    Enable both existing payment processors.
+    Enable existing payment processors.
     """
     Switch = apps.get_model('waffle', 'Switch')
     # Modified by EDUlib, Netbanx added
