@@ -5,9 +5,10 @@ import logging
 import os
 from cStringIO import StringIO
 
-# added by EDUlib
+# Added by EDUlib
 import pprint
-# added by EDUlib
+#import sqlite3
+# Added by EDUlib
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.management import call_command
@@ -86,26 +87,22 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
             return None
 
     def get(self, request):
-    #####def post(self, request):
         """Process a Netbanx merchant notification and place an order for paid products as appropriate."""
 
-        # PIERRE
-        # Traces
+        # Added by EDUlib
         #print("--------------------------")
         #print("Entering get from views.py")
         #print("--------------------------")
         #print("===== valeur de request dans views.py =====")
         #print(request)
         #print("===== valeur de request dans views.py =====")
-        # PIERRE
-        # Traces
+        # Added by EDUlib
 
         # Note (CCB): Orders should not be created until the payment processor has validated the response's signature.
         # This validation is performed in the handle_payment method. After that method succeeds, the response can be
         # safely assumed to have originated from Netbanx.
 
-        # PIERRE
-        # Traces
+        # Added by EDUlib
         response = request.GET.dict()
         #print("===== valeur de response dans get de views.py =====")
         #print(response)
@@ -113,39 +110,32 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
         #print("===== valeur de request.META['QUERY_STRING'] dans get de views.py =====")
         #print(request.META['QUERY_STRING'])
         #print("===== valeur de request.META['QUERY_STRING'] dans get de views.py =====")
-        # PIERRE
-        # Traces
+        # Added by EDUlib
 
         basket = None
         transaction_id = None
 
         try:
-            # PIERRE
-            # Traces
+            # Added by EDUlib
             order_number = response.get('orderNum')
             #print("===== valeur de order_number dans get de views.py =====")
             #print(order_number)
             #print("===== valeur de order_number dans get de views.py =====")
-            # PIERRE
-            # Traces
+            # Added by EDUlib
 
-            # PIERRE
-            # Traces
+            # Added by EDUlib
             transaction_id = response.get('id')
             #print("===== valeur de transaction_id dans get de views.py =====")
             #print(transaction_id)
             #print("===== valeur de transaction_id dans get de views.py =====")
-            # PIERRE
-            # Traces
+            # Added by EDUlib
 
-            # PIERRE
-            # Traces
+            # Added by EDUlib
             basket_id = OrderNumberGenerator().basket_id(order_number)
             #print("===== valeur de basket_id dans get de views.py =====")
             #print(basket_id)
             #print("===== valeur de basket_id dans get de views.py =====")
-            # PIERRE
-            # Traces
+            # Added by EDUlib
 
             ##### TEST 31 05 2016 #####
             #####conn = sqlite3.connect('/home/ubuntu/ecommerce/ecommerce/extensions/payment/processors/test.db')
@@ -173,13 +163,11 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
 
             basket = self._get_basket(basket_id)
 
-            # PIERRE
-            # Traces
+            # Added by EDUlib
             # creation du receipt_page_url
             receipt_page_url = u'{}?orderNum={}'.format(self.payment_processor.receipt_page_url, basket.order_number)
             #print("valeur de receipt_url = %s", receipt_page_url)
-            # Traces
-
+            # Added by EDUlib
 
             if not basket:
                 logger.error('Received payment for non-existent basket [%s].', basket_id)
@@ -244,15 +232,13 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
                 order_total
             )
 
-            # PIERRE
-            # Traces
+            # Added by EDUlib
             #print("-------------------------")
             #print("Leaving get from views.py")
             #print("-------------------------")
-            # PIERRE
-            # Traces
+            # Added by EDUlib
 
-            # PIERRE
+            # Added by EDUlib
             # modification du return vers le receipt_page_url
             # il faut peut-etre modifier tout les retour http dans get finalement
             #return HttpResponse()
@@ -260,7 +246,7 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
         except:  # pylint: disable=bare-except
             logger.exception(self.order_placement_failure_msg, basket.id)
             return HttpResponse(status=500)
-# Added by EDUlib
+            # Added by EDUlib
 
 class PaypalPaymentExecutionView(EdxOrderPlacementMixin, View):
     """Execute an approved PayPal payment and place an order for paid products as appropriate."""
