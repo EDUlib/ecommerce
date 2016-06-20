@@ -153,11 +153,40 @@ class Refund(StatusMixin, TimeStampedModel):
 
     def _issue_credit(self):
         """Issue a credit to the purchaser via the payment processor used for the original order."""
+        # Added by EDUlib
+        #print("--------------------------------")
+        #print("Entering _issue_credit models.py")
+        #print("--------------------------------")
+        # Added by EDUlib
         try:
             # TODO Update this if we ever support multiple payment sources for a single order.
             source = self.order.sources.first()
             processor = get_processor_class_by_name(source.source_type.name)()
+            # Added by EDUlib
+            #print("---------------------------------------")
+            #print("Before processor.issue_credit models.py")
+            #print("---------------------------------------")
+            #print("source value")
+            #print(source)
+            #print("processor value")
+            #print(processor)
+            #print("self.total_credit_excl_tax")
+            #print(self.total_credit_excl_tax)
+            #print("self.currency")
+            #print(self.currency)
+            #print("-------------------------------------------")
+            #print("Calling to processor.issue_credit models.py")
+            #print("-------------------------------------------")
+            # Added by EDUlib
             processor.issue_credit(source, self.total_credit_excl_tax, self.currency)
+            # Added by EDUlib
+            # AttributeError:
+            # Raised when an attribute reference (see Attribute references) or assignment fails.
+            # An attribute reference is a primary followed by a period and a name:
+            #print("--------------------------------------")
+            #print("Returning from  processor.issue_credit") #PIERRE we do not get here
+            #print("--------------------------------------")
+            # Added by EDUlib
 
             audit_log(
                 'credit_issued',
@@ -168,6 +197,10 @@ class Refund(StatusMixin, TimeStampedModel):
                 user_id=self.user.id
             )
         except AttributeError:
+            # Added by EDUlib
+            #logger.info("WE SHOULD NOT GET HERE")
+            #logger.info("Problem is in processor.issue_credit")
+            # Added by EDUlib
             # Order has no sources, resulting in an exception when trying to access `source_type`.
             # This occurs when attempting to refund free orders.
             logger.info("No payments to credit for Refund [%d]", self.id)
