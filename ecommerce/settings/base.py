@@ -325,6 +325,7 @@ WSGI_APPLICATION = 'wsgi.application'
 AUTH_USER_MODEL = 'core.User'
 
 # See: http://getblimp.github.io/django-rest-framework-jwt/#additional-settings
+# Added by EDUlib, JWT_SECRET_KEY and JWT_ISSUERS need to be changed
 JWT_AUTH = {
     'JWT_SECRET_KEY': None,
     'JWT_ALGORITHM': 'HS256',
@@ -342,6 +343,7 @@ JWT_AUTH = {
 ECOMMERCE_SERVICE_WORKER_USERNAME = 'ecommerce_worker'
 
 # Used to access the Enrollment API. Set this to the same value used by the LMS.
+# Modified by EDUlib, EDX_API_KEY needs to be changed
 EDX_API_KEY = None
 
 # Enables a special view that, when accessed, creates and logs in a new user.
@@ -390,6 +392,7 @@ SOCIAL_AUTH_USER_FIELDS = ['username', 'email', 'first_name', 'last_name']
 SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 
 # Set these to the correct values for your OAuth2/OpenID Connect provider
+# Modified by EDUlib, SOCIAL_AUTH_EDX_OIDC_KEY, SOCIAL_AUTH_EDX_OIDC_SECRET and SOCIAL_AUTH_EDX_OIDC_URL_ROOT need to be changed
 SOCIAL_AUTH_EDX_OIDC_KEY = None
 SOCIAL_AUTH_EDX_OIDC_SECRET = None
 SOCIAL_AUTH_EDX_OIDC_URL_ROOT = None
