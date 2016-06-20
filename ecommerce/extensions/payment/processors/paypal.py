@@ -79,7 +79,11 @@ class Paypal(BasePaymentProcessor):
             GatewayError: Indicates a general error or unexpected behavior on the part of PayPal which prevented
                 a payment from being created.
         """
-        return_url = urljoin(get_ecommerce_url(), reverse('paypal_execute'))
+        # Modified by EDUlib
+        #####return_url = urljoin(get_ecommerce_url(), reverse('paypal_execute'))
+        #####return_url = urljoin('https://test-commerce.edulib.org', reverse('paypal_execute'))
+        return_url = urljoin('http://test-commerce.edulib.org:8002', reverse('paypal_execute'))
+        # Modified by EDUlib
         data = {
             'intent': 'sale',
             'redirect_urls': {
