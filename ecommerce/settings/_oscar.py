@@ -94,20 +94,24 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-OSCAR_DEFAULT_CURRENCY = 'USD'
+# Modified by EDUlib
+OSCAR_DEFAULT_CURRENCY = 'CAD'
 # END ORDER PROCESSING
 
 
 # PAYMENT PROCESSING
+# Modified by EDUlib
 PAYMENT_PROCESSORS = (
     'ecommerce.extensions.payment.processors.cybersource.Cybersource',
     'ecommerce.extensions.payment.processors.paypal.Paypal',
+    'ecommerce.extensions.payment.processors.netbanx.Netbanx',
 )
 
 PAYMENT_PROCESSOR_RECEIPT_PATH = '/checkout/receipt/'
 PAYMENT_PROCESSOR_CANCEL_PATH = '/checkout/cancel-checkout/'
 PAYMENT_PROCESSOR_ERROR_PATH = '/checkout/error/'
 
+# Modified by EDUlib, adding a stub for netbanx
 PAYMENT_PROCESSOR_CONFIG = {
     'edx': {
         'cybersource': {
@@ -127,6 +131,14 @@ PAYMENT_PROCESSOR_CONFIG = {
             'receipt_path': PAYMENT_PROCESSOR_RECEIPT_PATH,
             'cancel_checkout_path': PAYMENT_PROCESSOR_CANCEL_PATH,
             'error_path': PAYMENT_PROCESSOR_ERROR_PATH,
+        },
+        'netbanx': {
+            'api_key': 'xxxxxxxxxxx',
+            'api_password': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            'account_number': 'xxxxxxxxxx',
+            'environment': 'TEST',
+            'receipt_path': PAYMENT_PROCESSOR_RECEIPT_PATH,
+            'cancel_path': PAYMENT_PROCESSOR_CANCEL_PATH,
         },
     },
 }
