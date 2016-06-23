@@ -16,7 +16,7 @@ Order = get_model('order', 'Order')
 class OrderNumberGenerator(object):
     # Modified by EDUlib
     #OFFSET = 100000
-    OFFSET = 400000
+    OFFSET = 410000
     # Modified by EDUlib
 
     def order_number(self, basket):
