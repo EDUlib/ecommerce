@@ -116,7 +116,8 @@ class Paypal(BasePaymentProcessor):
                             'name': middle_truncate(line.product.title, 127),
                             # PayPal requires that the sum of all the item prices (where price = price * quantity)
                             # equals to the total amount set in amount['total'].
-                            'price': unicode(line.line_price_incl_tax_incl_discounts / line.quantity),
+                            #'price': unicode(line.line_price_incl_tax_incl_discounts / line.quantity),
+                            'price': unicode(line.line_price_incl_tax_incl_discounts),
                             'currency': line.stockrecord.price_currency,
                         }
                         for line in basket.all_lines()
