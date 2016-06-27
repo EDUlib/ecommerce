@@ -125,7 +125,8 @@ class Netbanx(BasePaymentProcessor):
         # Added by EDUlib
         parameters = {
             'signed_date_time': self.utcnow().strftime(ISO_8601_FORMAT),
-            'locale': self.language_code,
+            #'locale': self.language_code,
+            'locale': 'fr_CA',
             'transaction_type': 'sale',
             'reference_number': basket.order_number,
             'amount': str(basket.total_incl_tax),
@@ -198,6 +199,8 @@ class Netbanx(BasePaymentProcessor):
 
         order_obj.merchantRefNum(basket.order_number)
         order_obj.currencyCode(basket.currency)
+        # testing language
+        order_obj.locale('fr_CA')
 
         # Added by EDUlib       
         new_total = int(basket.total_incl_tax * 100)
