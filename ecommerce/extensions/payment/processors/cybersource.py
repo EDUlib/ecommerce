@@ -147,8 +147,15 @@ class Cybersource(BasePaymentProcessor):
             'transaction_uuid': uuid.uuid4().hex,
             'signed_field_names': '',
             'unsigned_field_names': '',
-            'signed_date_time': datetime.datetime.utcnow().strftime(ISO_8601_FORMAT),
-            'locale': self.language_code,
+######## FICUS
+########            'signed_date_time': datetime.datetime.utcnow().strftime(ISO_8601_FORMAT),
+########            'locale': self.language_code,
+######## FICUS
+######## EUCALYPTUS
+            'signed_date_time': self.utcnow().strftime(ISO_8601_FORMAT),
+            #'locale': self.language_code,
+            'locale': 'fr-CA',
+######## EUCALYPTUS
             'transaction_type': 'sale',
             'reference_number': basket.order_number,
             'amount': str(basket.total_incl_tax),
