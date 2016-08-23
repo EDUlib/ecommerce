@@ -26,7 +26,7 @@ from ecommerce.extensions.payment.processors.cybersource import Cybersource
 from ecommerce.extensions.payment.processors.paypal import Paypal
 
 # Added by EDUlib
-from ecommerce.extensions.payment.processors.netbanx import Netbanx
+from ecommerce.extensions.payment.processors.paysafe import Paysafe
 # Added by EDUlib
 
 logger = logging.getLogger(__name__)
@@ -41,11 +41,11 @@ OrderTotalCalculator = get_class('checkout.calculators', 'OrderTotalCalculator')
 PaymentProcessorResponse = get_model('payment', 'PaymentProcessorResponse')
 
 # Added by EDUlib
-class NetbanxNotifyView(EdxOrderPlacementMixin, View):
-    """ Validates a response from CyberSource and processes the associated basket/order appropriately. """
+class PaysafeNotifyView(EdxOrderPlacementMixin, View):
+    """ Validates a response from Paysafe and processes the associated basket/order appropriately. """
     @property
     def payment_processor(self):
-        return Netbanx()
+        return Paysafe()
 
     # Disable atomicity for the view. Otherwise, we'd be unable to commit to the database
     # until the request had concluded; Django will refuse to commit when an atomic() block
@@ -54,7 +54,7 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
     @method_decorator(transaction.non_atomic_requests)
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
-        return super(NetbanxNotifyView, self).dispatch(request, *args, **kwargs)
+        return super(PaysafeNotifyView, self).dispatch(request, *args, **kwargs)
 
     def _get_billing_address(self, response):
         return BillingAddress(
@@ -87,7 +87,7 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
             return None
 
     def get(self, request):
-        """Process a Netbanx merchant notification and place an order for paid products as appropriate."""
+        """Process a Paysafe merchant notification and place an order for paid products as appropriate."""
 
         # Added by EDUlib
         #print("--------------------------")
@@ -100,7 +100,7 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
 
         # Note (CCB): Orders should not be created until the payment processor has validated the response's signature.
         # This validation is performed in the handle_payment method. After that method succeeds, the response can be
-        # safely assumed to have originated from Netbanx.
+        # safely assumed to have originated from Paysafe.
 
         # Added by EDUlib
         response = request.GET.dict()
@@ -156,7 +156,7 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
             ##### TEST 31 05 2016 #####
 
             logger.info(
-                'Received Netbanx merchant notification for transaction [%s], associated with basket [%d].',
+                'Received Paysafe merchant notification for transaction [%s], associated with basket [%d].',
                 transaction_id,
                 basket_id
             )
@@ -190,7 +190,7 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
                     return HttpResponse(status=400)
                 except (UserCancelled, TransactionDeclined) as exception:
                     logger.info(
-                        'Netbanx payment did not complete for basket [%d] because [%s]. '
+                        'Paysafe payment did not complete for basket [%d] because [%s]. '
                         'The payment response was recorded in entry [%d].',
                         basket.id,
                         exception.__class__.__name__,
@@ -199,7 +199,7 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
                     return HttpResponse()
                 except PaymentError:
                     logger.exception(
-                        'Netbanx payment failed for basket [%d]. The payment response was recorded in entry [%d].',
+                        'Paysafe payment failed for basket [%d]. The payment response was recorded in entry [%d].',
                         basket.id,
                         ppr.id
                     )
