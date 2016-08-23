@@ -28,8 +28,8 @@ class InvalidCybersourceDecision(GatewayError):
     pass
 
 # Added by EDUlib
-class InvalidNetbanxDecision(GatewayError):
-    """The decision returned by Netbanx was not recognized."""
+class InvalidPaysafeDecision(GatewayError):
+    """The decision returned by Paysafe was not recognized."""
     pass
 # Added by EDUlib
 
