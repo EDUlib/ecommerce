@@ -240,11 +240,11 @@ class Netbanx(BasePaymentProcessor):
         #logger.info("--------------------")
         response_object = optimal_obj.hosted_payment_service_handler().create_order(order_obj)
 
-        #print ("Create Order Response: ")
-        #print (response_object.__dict__)
-        #logger.info("---------------------------")
-        #logger.info("returning from create_order")
-        #logger.info("---------------------------")
+        print ("Create Order Response: ")
+        print (response_object.__dict__)
+        logger.info("---------------------------")
+        logger.info("returning from create_order")
+        logger.info("---------------------------")
 
         parameters['payment_page_url'] = response_object.link[0].uri
         parameters['id'] = response_object.id
@@ -389,6 +389,9 @@ class Netbanx(BasePaymentProcessor):
         #logger.info("---------------------------------")
         #logger.info("Leaving handle_processor_response")
         #logger.info("---------------------------------")
+
+        #####
+        ##### 
 
         return source, event
 

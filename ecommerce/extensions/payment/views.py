@@ -27,6 +27,9 @@ from ecommerce.extensions.payment.processors.paypal import Paypal
 
 # Added by EDUlib
 from ecommerce.extensions.payment.processors.netbanx import Netbanx
+from ecommerce.notifications.notifications import send_notification
+from ecommerce.core.url_utils import get_lms_url
+from ecommerce.courses.models import Course
 # Added by EDUlib
 
 logger = logging.getLogger(__name__)
@@ -231,6 +234,33 @@ class NetbanxNotifyView(EdxOrderPlacementMixin, View):
                 None,
                 order_total
             )
+
+            ##### sending an email #####
+            #product = order.lines.first().product
+            #course = Course.objects.get(id=product.attr.course_key)
+            #print("-------------------------")
+            #print("Before sending notifications")
+            #print("-------------------------")
+            #send_notification(
+            #    user,
+            #    'COURSE_PURCHASED',
+            #    context={
+            #        'contact_url': 'https://test-cours.edulib.org/contact',
+            #        'course_name': course.name,
+            #        'enrollment_code_title': product.title,
+            #        'order_number': order_number,
+            #        'partner_name': 'Open edX',
+            #        'lms_url': 'https://test-cours.edulib.org',
+            #    },
+            #    site='http://ec2-54-173-251-133.compute-1.amazonaws.com:8002'
+            #)
+            #print("-------------------------")
+            #print("After sending notifications")
+            #print("-------------------------")
+            ##### sending an email #####
+
+
+
 
             # Added by EDUlib
             #print("-------------------------")

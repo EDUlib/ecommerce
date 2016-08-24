@@ -246,6 +246,7 @@ class EnrollmentFulfillmentModule(BaseFulfillmentModule):
                 )
                 line.set_status(LINE.FULFILLMENT_TIMEOUT_ERROR)
         logger.info("Finished fulfilling 'Seat' product types for order [%s]", order.number)
+        self.send_email(order, course_key)
         return order, lines
 
     def revoke_line(self, line):
@@ -292,6 +293,35 @@ class EnrollmentFulfillmentModule(BaseFulfillmentModule):
             logger.exception('Failed to revoke fulfillment of Line [%d].', line.id)
 
         return False
+
+    def send_email(self, order, course_key):
+        """ Sends an email with enrollment code order information. """
+        # Note (multi-courses): Change from a course_name to a list of course names.
+        product = order.lines.first().product
+        course = Course.objects.get(id=product.attr.course_key)
+        print("-------------------------")
+        print("Before sending notifications")
+        print(order)
+        print("-------------------------")
+        send_notification(
+            order.user,
+            'COURSE_PURCHASED',
+            context={
+                'contact_url': get_lms_url('/contact'),
+                'course_title': course_key,
+                'course_price': order.total_incl_tax,
+                'order_number': order.number,
+                'order_currency': order.currency,
+                'partner_name': order.site.siteconfiguration.partner.name,
+                'lms_url': get_lms_url(),
+                'receipt_page_url': get_lms_url('{}?orderNum={}'.format(settings.RECEIPT_PAGE_PATH, order.number)),
+            },
+            site=order.site
+        )
+        print("-------------------------")
+        print("After sending notifications")
+        print("-------------------------")
+
 
 
 class CouponFulfillmentModule(BaseFulfillmentModule):
@@ -441,23 +471,30 @@ class EnrollmentCodeFulfillmentModule(BaseFulfillmentModule):
         """
         raise NotImplementedError("Revoke method not implemented!")
 
-    def send_email(self, order):
-        """ Sends an email with enrollment code order information. """
-        # Note (multi-courses): Change from a course_name to a list of course names.
-        product = order.lines.first().product
-        course = Course.objects.get(id=product.attr.course_key)
-        send_notification(
-            order.user,
-            'ORDER_WITH_CSV',
-            context={
-                'contact_url': get_lms_url('/contact'),
-                'course_name': course.name,
-                'download_csv_link': get_ecommerce_url(reverse('coupons:enrollment_code_csv', args=[order.number])),
-                'enrollment_code_title': product.title,
-                'order_number': order.number,
-                'partner_name': order.site.siteconfiguration.partner.name,
-                'lms_url': get_lms_url(),
-                'receipt_page_url': get_lms_url('{}?orderNum={}'.format(settings.RECEIPT_PAGE_PATH, order.number)),
-            },
-            site=order.site
-        )
+    #def send_email(self, order):
+    #    """ Sends an email with enrollment code order information. """
+    #    # Note (multi-courses): Change from a course_name to a list of course names.
+    #    product = order.lines.first().product
+    #    course = Course.objects.get(id=product.attr.course_key)
+    #    print("-------------------------")
+    #    print("Before sending notifications")
+    #    print("-------------------------")
+    #    send_notification(
+    #        order.user,
+    #        #####'ORDER_WITH_CSV',
+    #        'COURSE_PURCHASED',
+    #        context={
+    #            'contact_url': get_lms_url('/contact'),
+    #            'course_name': course.name,
+    #            'download_csv_link': get_ecommerce_url(reverse('coupons:enrollment_code_csv', args=[order.number])),
+    #            'enrollment_code_title': product.title,
+    #            'order_number': order.number,
+    #            'partner_name': order.site.siteconfiguration.partner.name,
+    #            'lms_url': get_lms_url(),
+    #            'receipt_page_url': get_lms_url('{}?orderNum={}'.format(settings.RECEIPT_PAGE_PATH, order.number)),
+    #        },
+    #        site=order.site
+    #    )
+    #    print("-------------------------")
+    #    print("After sending notifications")
+    #    print("-------------------------")

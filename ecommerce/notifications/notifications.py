@@ -28,7 +28,8 @@ def send_notification(user, commtype_code, context, site):
     full_name = user.get_full_name()
     context.update({
         'full_name': full_name,
-        'platform_name': site.name,
+        #####'platform_name': site.name,
+        'platform_name': 'EDUlib',
         'tracking_pixel': tracking_pixel,
     })
 
