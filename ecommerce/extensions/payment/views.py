@@ -27,6 +27,9 @@ from ecommerce.extensions.payment.processors.paypal import Paypal
 
 # Added by EDUlib
 from ecommerce.extensions.payment.processors.paysafe import Paysafe
+from ecommerce.notifications.notifications import send_notification
+from ecommerce.core.url_utils import get_lms_url
+from ecommerce.courses.models import Course
 # Added by EDUlib
 
 logger = logging.getLogger(__name__)
