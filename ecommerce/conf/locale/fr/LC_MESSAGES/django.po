@@ -1813,7 +1813,7 @@ msgstr "Le client a supprimé son compte."
 
 #: templates/oscar/dashboard/orders/order_detail.html:61
 msgid "Order information"
-msgstr "Information de la commande"
+msgstr "Information sur la commande"
 
 #: templates/oscar/dashboard/orders/order_detail.html:63
 msgid "Order Total"
