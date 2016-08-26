@@ -9,7 +9,18 @@
         <p>{% blocktrans %}Hi {{full_name}},{% endblocktrans %}</p>
         <br>
         <p>{% blocktrans with course_title=course_title platform_name=platform_name %}Thank you for purchasing {{course_title}}. The charge below will appear on your next credit or debit card statement with a company name of {{platform_name}}.{% endblocktrans %}</p>
-        <p>{% trans "Invoiced Amount" %}: {{course_price}} {{order_currency}}</p>
+        <p><b>{% trans "Order Number" %}</b></p>
+        <p>{{order_number}}</p>
+        <p><b>{% trans "Order information" %}</b></p>
+        <p>{{course_title}}</p>
+        <p><b>{% trans "Price (excl tax)" %}</b></p>
+        <p>{{course_no_taxes}} {{order_currency}}</p>
+        <p><b>TPS (108160995 RT0001)</b></p>
+        <p>{{tps}} {{order_currency}}</p>
+        <p><b>TVQ (1006011132 TQ0005)</b></p>
+        <p>{{tvq}} {{order_currency}}</p>
+        <p><b>{% trans "Invoiced Amount" %}</b></p>
+        <p>{{course_price}} {{order_currency}}</p>
         <br>
         <p>{% blocktrans %}You can access your course and complete your verification (if required) on your {{platform_name}} dashboard. {% endblocktrans %} </p>
         <a href="https://test-cours.edulib.org/dashboard">{% trans "Dashboard"%}</a>
