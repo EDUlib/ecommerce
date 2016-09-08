@@ -489,7 +489,7 @@ msgstr "Utilisateur"
 
 #: extensions/refund/models.py:63
 msgid "Total Credit (excl. tax)"
-msgstr "Total des crédits (incluant les taxes)"
+msgstr "Total des remboursements (incluant les taxes)"
 
 #: extensions/refund/models.py:64
 #: templates/oscar/dashboard/catalogue/product_update.html:198
@@ -506,7 +506,7 @@ msgstr "Ligne de commande"
 
 #: extensions/refund/models.py:234
 msgid "Line Credit (excl. tax)"
-msgstr "Ligne de crédit (excluant les taxes)"
+msgstr "Ligne de remboursement (excluant les taxes)"
 
 #: extensions/refund/models.py:235
 #: templates/oscar/basket/partials/basket_content.html:41
@@ -2228,11 +2228,11 @@ msgstr "Confirmer"
 
 #: templates/oscar/dashboard/partials/refund_buttons.html:5
 msgid "Approve Credit and Revoke"
-msgstr "Approuver le crédit er révoquer"
+msgstr "Approuver le remboursement et révoquer"
 
 #: templates/oscar/dashboard/partials/refund_buttons.html:8
 msgid "Approve Credit Only"
-msgstr "Uniquement approuver le crédit"
+msgstr "Uniquement approuver le remboursement"
 
 #: templates/oscar/dashboard/partials/refund_buttons.html:14
 msgid "Deny"
@@ -2248,13 +2248,13 @@ msgstr "Nombre d'items"
 #: templates/oscar/dashboard/refunds/refund_detail.html:146
 #: templates/oscar/dashboard/refunds/refund_list.html:57
 msgid "Total Credit"
-msgstr "Total du crédit"
+msgstr "Total du remboursement"
 
 #: templates/oscar/dashboard/partials/refund_table.html:12
 #: templates/oscar/dashboard/refunds/refund_detail.html:72
 #: templates/oscar/dashboard/refunds/refund_list.html:62
 msgid "Created"
-msgstr "Créée"
+msgstr "Créé"
 
 #: templates/oscar/dashboard/partials/refund_table.html:31
 #: templates/oscar/dashboard/refunds/refund_list.html:105
@@ -2308,7 +2308,7 @@ msgstr "Ligne de commande associée"
 
 #: templates/oscar/dashboard/refunds/refund_detail.html:112
 msgid "Credit (excl. tax)"
-msgstr "Crédit (excluant les taxes)"
+msgstr "Remboursement (excluant les taxes)"
 
 #: templates/oscar/dashboard/refunds/refund_detail.html:169
 msgid "Processor"
