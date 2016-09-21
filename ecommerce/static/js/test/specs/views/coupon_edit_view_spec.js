@@ -18,7 +18,8 @@ define([
             var view,
                 model,
                 enrollment_code_data = Mock_Coupons.enrollmentCodeCouponData,
-                discount_code_data = Mock_Coupons.discountCodeCouponData;
+                discount_code_data = Mock_Coupons.discountCodeCouponData,
+                invoice_coupon_data = Mock_Coupons.couponWithInvoiceData;
 
             describe('edit enrollment code', function () {
                 beforeEach(function () {
@@ -36,7 +37,7 @@ define([
                     expect(view.$el.find('[name=code_type]').val()).toEqual('Enrollment code');
                     expect(view.$el.find('[name=start_date]').val()).toEqual(startDate);
                     expect(view.$el.find('[name=end_date]').val()).toEqual(endDate);
-                    expect(voucherType.children().length).toBe(2);
+                    expect(voucherType.children().length).toBe(3);
                     expect(voucherType.val()).toEqual(model.get('voucher_type'));
                     expect(view.$el.find('[name=quantity]').val()).toEqual(model.get('quantity').toString());
                     expect(view.$el.find('[name=client]').val()).toEqual(model.get('client'));
@@ -61,7 +62,7 @@ define([
                     expect(view.$el.find('[name=code_type]').val()).toEqual('Discount code');
                     expect(view.$el.find('[name=start_date]').val()).toEqual(startDate);
                     expect(view.$el.find('[name=end_date]').val()).toEqual(endDate);
-                    expect(voucherType.children().length).toBe(2);
+                    expect(voucherType.children().length).toBe(3);
                     expect(voucherType.val()).toEqual(model.get('voucher_type'));
                     expect(view.$el.find('[name=quantity]').val()).toEqual(model.get('quantity').toString());
                     expect(view.$el.find('[name=client]').val()).toEqual(model.get('client'));
@@ -73,6 +74,40 @@ define([
                 });
             });
 
+            describe('Coupon with invoice data', function() {
+                beforeEach(function() {
+                    model = Coupon.findOrCreate(invoice_coupon_data, {parse: true});
+                    model.updatePaymentInformation();
+                    view = new CouponCreateEditView({model: model, editing: true}).render();
+                });
+
+                it('should contain invoice attributes.', function() {
+                    var tds, payment_date = Utils.stripTimezone(model.get('invoice_payment_date'));
+                    if (model.get('tax_deducted_source')) {
+                        tds = 'Yes';
+                    } else {
+                        tds = 'No';
+                    }
+                    expect(view.$el.find('[name=invoice_type]').val()).toEqual(model.get('invoice_type'));
+                    expect(view.$el.find('[name=invoice_number]').val()).toEqual(model.get('invoice_number'));
+                    expect(view.$el.find('[name=invoice_discount_value]').val()).toEqual('');
+                    expect(view.$el.find('[name=invoice_payment_date]').val()).toEqual(payment_date);
+                    expect(view.$el.find('[name=tax_deduction]:checked').val()).toEqual(tds);
+                    expect(view.$el.find('[name=tax_deducted_source_value]').val())
+                        .toEqual(model.get('tax_deducted_source'));
+                });
+
+                it('should patch save the model when form is in editing mode and has editable attributes', function () {
+                    var formView = view.formView;
+                    spyOn(formView.model, 'save');
+                    spyOn(formView.model, 'isValid').and.returnValue(true);
+
+                    expect(formView.modelServerState).toEqual(model.pick(formView.editableAttributes));
+                    formView.model.set('title', 'Test Title');
+                    formView.submit($.Event('click'));
+                    expect(model.save).toHaveBeenCalled();
+                });
+            });
         });
     }
 );

@@ -64,13 +64,22 @@ def prepare_voucher(code='COUPONTEST', _range=None, start_datetime=None, end_dat
     if end_datetime is None:
         end_datetime = now() + datetime.timedelta(days=10)
 
-    voucher = VoucherFactory(code=code, start_datetime=start_datetime, end_datetime=end_datetime,
-                             usage=usage)
+    voucher = VoucherFactory(
+        code=code,
+        start_datetime=start_datetime,
+        end_datetime=end_datetime,
+        usage=usage
+    )
     benefit = BenefitFactory(type=benefit_type, range=_range, value=benefit_value)
     condition = ConditionFactory(value=1, range=_range)
     if max_usage:
-        offer = ConditionalOfferFactory(benefit=benefit, condition=condition, max_global_applications=max_usage)
+        offer = ConditionalOfferFactory(
+            name='PrepareVoucherOffer',
+            benefit=benefit,
+            condition=condition,
+            max_global_applications=max_usage
+        )
     else:
-        offer = ConditionalOfferFactory(benefit=benefit, condition=condition)
+        offer = ConditionalOfferFactory(name='PrepareVoucherOffer', benefit=benefit, condition=condition)
     voucher.offers.add(offer)
     return voucher, product

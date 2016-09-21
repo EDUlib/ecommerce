@@ -219,6 +219,8 @@ MIDDLEWARE_CLASSES = (
     'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
     'threadlocals.middleware.ThreadLocalMiddleware',
+    'ecommerce.theming.middleware.CurrentSiteThemeMiddleware',
+    'ecommerce.theming.middleware.ThemePreviewMiddleware',
 )
 # END MIDDLEWARE CONFIGURATION
 
@@ -256,6 +258,7 @@ DJANGO_APPS = [
     'waffle',
     'django_filters',
     'rest_framework_swagger',
+    'release_util',
 ]
 
 # Apps specific to this project go here.
@@ -322,6 +325,7 @@ WSGI_APPLICATION = 'wsgi.application'
 AUTH_USER_MODEL = 'core.User'
 
 # See: http://getblimp.github.io/django-rest-framework-jwt/#additional-settings
+# Added by EDUlib, JWT_SECRET_KEY and JWT_ISSUERS need to be changed
 JWT_AUTH = {
     'JWT_SECRET_KEY': None,
     'JWT_ALGORITHM': 'HS256',
@@ -339,6 +343,7 @@ JWT_AUTH = {
 ECOMMERCE_SERVICE_WORKER_USERNAME = 'ecommerce_worker'
 
 # Used to access the Enrollment API. Set this to the same value used by the LMS.
+# Modified by EDUlib, EDX_API_KEY needs to be changed
 EDX_API_KEY = None
 
 # Enables a special view that, when accessed, creates and logs in a new user.
@@ -387,15 +392,18 @@ SOCIAL_AUTH_USER_FIELDS = ['username', 'email', 'first_name', 'last_name']
 SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 
 # Set these to the correct values for your OAuth2/OpenID Connect provider
+# Modified by EDUlib, SOCIAL_AUTH_EDX_OIDC_KEY, SOCIAL_AUTH_EDX_OIDC_SECRET and SOCIAL_AUTH_EDX_OIDC_URL_ROOT need to be changed
 SOCIAL_AUTH_EDX_OIDC_KEY = None
 SOCIAL_AUTH_EDX_OIDC_SECRET = None
 SOCIAL_AUTH_EDX_OIDC_URL_ROOT = None
+SOCIAL_AUTH_EDX_OIDC_LOGOUT_URL = None
 
 # This value should be the same as SOCIAL_AUTH_EDX_OIDC_SECRET
 SOCIAL_AUTH_EDX_OIDC_ID_TOKEN_DECRYPTION_KEY = SOCIAL_AUTH_EDX_OIDC_SECRET
 
 # Redirect successfully authenticated users to the Oscar dashboard.
-LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_REDIRECT_URL = 'dashboard:index'
+LOGIN_URL = 'login'
 
 EXTRA_SCOPE = ['permissions']
 # END AUTHENTICATION
@@ -513,7 +521,9 @@ ENABLE_COMPREHENSIVE_THEMING = True
 DISABLE_THEMING_ON_RUNTIME_SWITCH = "disable_theming_on_runtime"
 
 # Directory that contains all themes
-COMPREHENSIVE_THEME_DIR = DJANGO_ROOT + "/themes"
+COMPREHENSIVE_THEME_DIRS = [
+    DJANGO_ROOT + "/themes",
+]
 
 # Theme to use when no site or site theme is defined,
 # set to None if you want to use openedx theme
@@ -527,7 +537,12 @@ THEME_CACHE_TIMEOUT = 30 * 60
 
 
 EDX_DRF_EXTENSIONS = {
-    'JWT_PAYLOAD_USER_ATTRIBUTES': ('full_name', 'email', 'tracking_context',),
+    'JWT_PAYLOAD_USER_ATTRIBUTE_MAPPING': {
+        'administrator': 'is_staff',
+        'email': 'email',
+        'full_name': 'full_name',
+        'tracking_context': 'tracking_context',
+    },
 }
 
 # Enrollment codes voucher end datetime used for setting the end dates for vouchers

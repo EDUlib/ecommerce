@@ -28,6 +28,10 @@ define([
             initialize: function () {
                 this.alertViews = [];
 
+                if (this.editing && _.has(this, 'editableAttributes')) {
+                    this.modelServerState = this.model.pick(this.editableAttributes);
+                }
+
                 // Enable validation
                 Utils.bindValidation(this);
             },
@@ -51,8 +55,8 @@ define([
              * @param {String} level - Severity of the alert. This should be one of success, info, warning, or danger.
              * @param {Sring} message - Message to display to the user.
              */
-            renderAlert: function (level, message) {
-                var view = new AlertView({level: level, title: gettext('Error!'), message: message});
+            renderAlert: function (level, title, message) {
+                var view = new AlertView({level: level, title: title, message: message});
 
                 view.render();
                 this.$alerts.append(view.el);
@@ -92,7 +96,7 @@ define([
                     success: function (data) {
                         if(data.id === courseId) {
                             _this.clearAlerts();
-                            _this.renderAlert('danger', message);
+                            _this.renderAlert('danger', gettext('Error!'), message);
                             courseIDFound = true;
                         }
                     },
@@ -149,14 +153,16 @@ define([
                     self = this,
                     courseId = $('input[name=id]').val(),
                     btnSavingContent = '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> ' +
-                        gettext('Saving...');
+                        gettext('Saving...'),
+                    onSaveComplete,
+                    onSaveError;
 
                 e.preventDefault();
 
                 // Validate the input and display a message, if necessary.
                 if (!this.model.isValid(true)) {
                     this.clearAlerts();
-                    this.renderAlert('danger', gettext('You must complete all required fields.'));
+                    this.renderAlert('danger', gettext('Error!'), gettext('You must complete all required fields.'));
                     return;
                 }
                 // Check if the courseID already exists.
@@ -174,33 +180,57 @@ define([
                 // Disable all buttons by setting the attribute (for <button>) and class (for <a>)
                 $buttons.attr('disabled', 'disabled').addClass('disabled');
 
-                this.model.save({
-                    complete: function () {
-                        // Restore the button text
-                        $submitButton.text(btnDefaultText);
+                onSaveComplete = function () {
+                    // Restore the button text
+                    $submitButton.text(btnDefaultText);
 
-                        // Re-enable the buttons
-                        $buttons.removeAttr('disabled').removeClass('disabled');
-                    },
-                    success: this.saveSuccess.bind(this),
-                    error: function (model, response) {
-                        var message = gettext('An error occurred while saving the data.');
+                    // Re-enable the buttons
+                    $buttons.removeAttr('disabled').removeClass('disabled');
+                };
 
-                        if (response.responseJSON && response.responseJSON.error) {
-                            message = response.responseJSON.error;
+                onSaveError = function (model, response) {
+                    var message = gettext('An error occurred while saving the data.');
 
-                            // Log the error to the console for debugging purposes
-                            console.error(message);
-                        } else {
-                            // Log the error to the console for debugging purposes
-                            console.error(response.responseText);
-                        }
+                    if (response.responseJSON && response.responseJSON.error) {
+                        message = response.responseJSON.error;
 
-                        self.clearAlerts();
-                        self.renderAlert('danger', message);
-                        self.$el.animate({scrollTop: 0}, 'slow');
+                        // Log the error to the console for debugging purposes
+                        console.error(message);
+                    } else {
+                        // Log the error to the console for debugging purposes
+                        console.error(response.responseText);
                     }
-                });
+
+                    self.clearAlerts();
+                    self.renderAlert('danger', gettext('Error!'), message);
+                    self.$el.animate({scrollTop: 0}, 'slow');
+                };
+
+                if (this.editing && _.has(this, 'editableAttributes')) {
+                    var editableAttributes = this.model.pick(this.editableAttributes),
+                        changedAttributes = _.omit(editableAttributes, function(value, key) {
+                            return value === this.modelServerState[key];
+                        }, this);
+
+                    this.model.save(
+                        changedAttributes,
+                        {
+                            complete: onSaveComplete,
+                            error: onSaveError,
+                            patch: true,
+                            success: this.saveSuccess.bind(this)
+                        }
+                    );
+                } else {
+                    this.model.save(
+                        null,
+                        {
+                            complete: onSaveComplete,
+                            success: this.saveSuccess.bind(this),
+                            error: onSaveError
+                        }
+                    );
+                }
 
                 return this;
             }
@@ -210,9 +240,9 @@ define([
          * Override Backbone.View.extend so that the child view inherits events.
          */
         FormView.extend = function (child) {
-        	  var view = Backbone.View.extend.apply(this, arguments);
-        	  view.prototype.events = _.extend({}, this.prototype.events, child.events);
-        	  return view;
+            var view = Backbone.View.extend.apply(this, arguments);
+            view.prototype.events = _.extend({}, this.prototype.events, child.events);
+            return view;
         };
 
         return FormView;

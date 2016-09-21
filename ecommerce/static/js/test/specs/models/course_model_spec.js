@@ -7,7 +7,7 @@ define([
         'models/course_seats/professional_seat',
         'models/course_seats/audit_seat',
         'models/course_seats/honor_seat',
-        'jquery-cookie'
+        'js-cookie'
     ],
     function ($,
               moment,
@@ -16,7 +16,9 @@ define([
               Course,
               ProfessionalSeat,
               AuditSeat,
-              HonorSeat) {
+              HonorSeat,
+              Cookies
+    ) {
         'use strict';
 
         var model,
@@ -152,6 +154,30 @@ define([
                 ],
                 is_available_to_buy: true
             },
+            enrollmentCodeProduct = {
+                id: 12,
+                url: 'http://ecommerce.local:8002/api/v2/products/12/',
+                structure: 'standalone',
+                product_class: 'Enrollment Code',
+                title: 'Enrollent Code for Professional Seat in edX Demonstration Course',
+                price: '300.00',
+                expires: null,
+                attribute_values: [
+                    {
+                        name: 'seat_type',
+                        value: 'professional'
+                    },
+                    {
+                        name: 'course_key',
+                        value: 'edX/DemoX/Demo_Course'
+                    },
+                    {
+                        name: 'id_verification_required',
+                        value: true
+                    },
+                ],
+                is_available_to_buy: true
+            },
             data = {
                 id: 'edX/DemoX/Demo_Course',
                 url: 'http://ecommerce.local:8002/api/v2/courses/edX/DemoX/Demo_Course/',
@@ -167,6 +193,7 @@ define([
                     verifiedSeat,
                     creditSeat,
                     alternateCreditSeat,
+                    enrollmentCodeProduct,
                     {
                         id: 7,
                         url: 'http://ecommerce.local:8002/api/v2/products/7/',
@@ -190,25 +217,25 @@ define([
             beforeEach(function () {
                 model = Course.findOrCreate(data, {parse: true});
 
-                // Remove the parent products
-                model.removeParentProducts();
+                // Remove the non-essential products
+                model.prepareProducts();
             });
 
-            describe('removeParentProducts', function () {
-                it('should remove all parent products from the products collection', function () {
+            describe('prepareProducts', function () {
+                it('should remove all non-essential products from the products collection', function () {
                     var products;
 
-                    // Re-initialize the model since the beforeEach removes the parents
+                    // Re-initialize the model since the beforeEach removes the products we don't need
                     model = Course.findOrCreate(data, {parse: true});
 
                     // Sanity check to ensure the products were properly parsed
                     products = model.get('products');
-                    expect(products.length).toEqual(6);
+                    expect(products.length).toEqual(7);
 
-                    // Remove the parent products
-                    model.removeParentProducts();
+                    // Re-remove the non-essential products
+                    model.prepareProducts();
 
-                    // Only the children survived...
+                    // Only the strong survived...
                     expect(products.length).toEqual(5);
                     expect(products.where({structure: 'child'}).length).toEqual(5);
                 });
@@ -264,7 +291,7 @@ define([
                         cookie = 'save-test';
 
                     spyOn($, 'ajax');
-                    $.cookie('ecommerce_csrftoken', cookie);
+                    Cookies.set('ecommerce_csrftoken', cookie);
 
                     expect(model.validate()).toBeFalsy();
                     model.save();

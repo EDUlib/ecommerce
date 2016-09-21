@@ -89,9 +89,11 @@ class Paypal(BasePaymentProcessor):
             GatewayError: Indicates a general error or unexpected behavior on the part of PayPal which prevented
                 a payment from being created.
         """
+        # Modified by EDUlib
         #####return_url = urljoin(get_ecommerce_url(), reverse('paypal_execute'))
         #####return_url = urljoin('https://test-commerce.edulib.org', reverse('paypal_execute'))
         return_url = urljoin('http://test-commerce.edulib.org:8002', reverse('paypal_execute'))
+        # Modified by EDUlib
         data = {
             'intent': 'sale',
             'redirect_urls': {
@@ -112,6 +114,9 @@ class Paypal(BasePaymentProcessor):
                             'quantity': line.quantity,
                             # PayPal requires that item names be at most 127 characters long.
                             'name': middle_truncate(line.product.title, 127),
+                            # PayPal requires that the sum of all the item prices (where price = price * quantity)
+                            # equals to the total amount set in amount['total'].
+                            #'price': unicode(line.line_price_incl_tax_incl_discounts / line.quantity),
                             'price': unicode(line.line_price_incl_tax_incl_discounts),
                             'currency': line.stockrecord.price_currency,
                         }

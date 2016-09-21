@@ -1,9 +1,12 @@
 # noinspection PyUnresolvedReferences
+import hashlib
+
+from django.conf import settings
+from django.core.cache import cache
 from django.db import models
 from oscar.apps.offer.abstract_models import AbstractRange
 from threadlocals.threadlocals import get_current_request
 
-from ecommerce.core.url_utils import get_course_catalog_api_client
 from ecommerce.coupons.utils import get_seats_from_query
 
 
@@ -16,14 +19,20 @@ class Range(AbstractRange):
         """
         Retrieve the results from running the query contained in catalog_query field.
         """
-        request = get_current_request()
-        try:
-            response = get_course_catalog_api_client(request.site).course_runs.contains.get(
-                query=self.catalog_query,
-                course_run_ids=product.course_id
-            )
-        except:  # pylint: disable=bare-except
-            raise Exception('Could not contact Course Catalog Service.')
+        cache_key = 'catalog_query_contains [{}] [{}]'.format(self.catalog_query, product.course_id)
+        cache_hash = hashlib.md5(cache_key).hexdigest()
+        response = cache.get(cache_hash)
+        if not response:  # pragma: no cover
+            request = get_current_request()
+            try:
+                response = request.site.siteconfiguration.course_catalog_api_client.course_runs.contains.get(
+                    query=self.catalog_query,
+                    course_run_ids=product.course_id
+                )
+                cache.set(cache_hash, response, settings.COURSES_API_CACHE_TIMEOUT)
+            except:  # pylint: disable=bare-except
+                raise Exception('Could not contact Course Catalog Service.')
+
         return response
 
     def contains_product(self, product):

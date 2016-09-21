@@ -17,9 +17,14 @@ define([
 
         describe('Coupon model', function () {
             describe('validation', function () {
-                it('should validate dates', function () {
+                var model;
+
+                beforeEach(function () {
                     spyOn($, 'ajax');
-                    var model = Coupon.findOrCreate(discountCodeData, {parse: true});
+                    model = Coupon.findOrCreate(discountCodeData, {parse: true});
+                });
+
+                it('should validate dates', function () {
                     model.validate();
                     expect(model.isValid()).toBeTruthy();
 
@@ -35,12 +40,94 @@ define([
                 });
 
                 it('should validate discount code has discount type and value', function () {
-                    spyOn($, 'ajax');
-                    var model = Coupon.findOrCreate(discountCodeData, {parse: true});
                     model.set('benefit_value', '');
                     model.set('benefit_type', '');
                     model.validate();
                     expect(model.isValid()).toBeFalsy();
+                });
+
+                it('should validate course ID if the catalog is a Single Course Catalog', function () {
+                    model.set('catalog_type', 'Single course');
+                    model.set('course_id', '');
+                    model.validate();
+                    expect(model.isValid()).toBeFalsy();
+
+                    model.set('course_id', 'a/b/c');
+                    model.validate();
+                    expect(model.isValid()).toBeTruthy();
+                });
+
+                it('should validate seat type if the catalog is a Single Course Catalog', function () {
+                    model.set('catalog_type', 'Single course');
+                    model.set('seat_type', '');
+                    model.validate();
+                    expect(model.isValid()).toBeFalsy();
+
+                    model.set('seat_type', 'Verified');
+                    model.validate();
+                    expect(model.isValid()).toBeTruthy();
+                });
+
+                it('should validate catalog query and course seat types for Multiple Courses Catalog', function () {
+                    model.set('catalog_type', 'Multiple courses');
+                    model.set('catalog_query', '');
+                    model.validate();
+                    expect(model.isValid()).toBeFalsy();
+
+                    model.set('catalog_query', '*:*');
+                    model.set('course_seat_types', []);
+                    model.validate();
+                    expect(model.isValid()).toBeFalsy();
+
+                    model.set('catalog_query', '*:*');
+                    model.set('course_seat_types', ['verified']);
+                    model.validate();
+                    expect(model.isValid()).toBeTruthy();
+                });
+
+                it('should validate invoice data.', function() {
+                    model.set('price', 'text');
+                    model.validate();
+                    expect(model.isValid()).toBeFalsy();
+                    model.set('price', 100);
+                    model.validate();
+                    expect(model.isValid()).toBeTruthy();
+
+                    model.set('invoice_discount_value', 'text');
+                    model.validate();
+                    expect(model.isValid()).toBeFalsy();
+                    model.set('invoice_discount_value', 100);
+                    model.validate();
+                    expect(model.isValid()).toBeTruthy();
+                });
+
+                it('should validate coupon code.', function() {
+                    model.set('code', '!#$%&/()=');
+                    model.validate();
+                    expect(model.isValid()).toBeFalsy();
+
+                    model.set('code', 'CODE12345');
+                    model.validate();
+                    expect(model.isValid()).toBeTruthy();
+                });
+            });
+
+            describe('test model methods', function () {
+                it('should return seat price if a coupon has a seat', function () {
+                    var model = new Coupon();
+
+                    expect(model.getSeatPrice()).toEqual('');
+
+                    model.set('seats', [{'price': 100}]);
+                    expect(model.getSeatPrice()).toEqual(100);
+                });
+
+                it('should set max uses 1 if voucher usage Single use', function () {
+                    var model = new Coupon();
+                    model.set('vouchers', [{ usage: 'Single use' }]);
+
+                    model.updateVoucherData();
+                    expect(model.get('max_uses')).toBe(1);
                 });
             });
 
@@ -67,6 +154,21 @@ define([
                     args = $.ajax.calls.argsFor(0);
                     ajaxData = JSON.parse(args[0].data);
                     expect(ajaxData.quantity).toEqual(1);
+                });
+
+                it('should format start and end date if they are patch updated', function () {
+                    var model = Coupon.findOrCreate(discountCodeData, {parse: true});
+                    spyOn(moment, 'utc');
+                    model.save(
+                        {
+                            start_date: '2015-11-11T00:00:00Z',
+                            end_date: '2016-11-11T00:00:00Z'
+                        },
+                        {patch: true}
+                    );
+
+                    expect(moment.utc).toHaveBeenCalledWith('2015-11-11T00:00:00Z');
+                    expect(moment.utc).toHaveBeenCalledWith('2016-11-11T00:00:00Z');
                 });
             });
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import httpretty
 from django.db import IntegrityError
 from django.test import override_settings
@@ -6,7 +7,8 @@ from oscar.templatetags.currency_filters import currency
 from oscar.test.factories import *  # pylint:disable=wildcard-import,unused-wildcard-import
 
 from ecommerce.core.url_utils import get_ecommerce_url
-from ecommerce.coupons.tests.mixins import CouponMixin
+from ecommerce.core.tests.decorators import mock_course_catalog_api_client
+from ecommerce.coupons.tests.mixins import CouponMixin, CourseCatalogMockMixin
 from ecommerce.courses.tests.factories import CourseFactory
 from ecommerce.extensions.catalogue.tests.mixins import CourseCatalogTestMixin
 from ecommerce.extensions.fulfillment.modules import CouponFulfillmentModule
@@ -32,7 +34,9 @@ VOUCHER_CODE = "XMASC0DE"
 VOUCHER_CODE_LENGTH = 1
 
 
-class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
+@httpretty.activate
+@mock_course_catalog_api_client
+class UtilTests(CouponMixin, CourseCatalogMockMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
     course_id = 'edX/DemoX/Demo_Course'
     certificate_type = 'test-certificate-type'
     provider = None
@@ -40,7 +44,7 @@ class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
     def setUp(self):
         super(UtilTests, self).setUp()
 
-        self.user = self.create_user(full_name="Test User", is_staff=True)
+        self.user = self.create_user(full_name="Tešt Ušer", is_staff=True)
         self.client.login(username=self.user.username, password=self.password)
 
         self.course = CourseFactory(id='course-v1:test-org+course+run')
@@ -55,7 +59,7 @@ class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
         self.coupon = self.create_coupon(
             title='Test product',
             catalog=self.catalog,
-            note='Test note',
+            note='Tešt note',
             quantity=1,
             max_uses=1
         )
@@ -107,15 +111,33 @@ class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
             voucher_type=Voucher.SINGLE_USE
         )
 
+    def create_catalog_coupon(
+            self,
+            coupon_title='Query coupon',
+            quantity=1,
+            catalog_query='*:*',
+            course_seat_types='verified'
+    ):
+        self.mock_dynamic_catalog_course_runs_api()
+        return self.create_coupon(
+            title=coupon_title,
+            quantity=quantity,
+            catalog_query=catalog_query,
+            course_seat_types=course_seat_types
+        )
+
     def use_voucher(self, order_num, voucher, user):
         """
         Mark voucher as used by provided users
 
         Args:
+            order_num (string): Order number
             voucher (Voucher): voucher to be marked as used
             users (list): list of users
         """
         order = OrderFactory(number=order_num)
+        order_line = OrderLineFactory(product=voucher.offers.first().condition.range.all_products()[0])
+        order.lines.add(order_line)
         voucher.record_usage(order, user)
         voucher.offers.first().record_usage(discount={'freq': 1, 'discount': 1})
 
@@ -135,7 +157,7 @@ class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
             catalog=self.catalog,
             coupon=self.coupon,
             end_datetime=datetime.date(2015, 10, 30),
-            name="Test voucher",
+            name="Tešt voučher",
             quantity=10,
             start_datetime=datetime.date(2015, 10, 1),
             voucher_type=Voucher.SINGLE_USE
@@ -174,7 +196,7 @@ class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
                 code=code
             )
 
-        for _ in range(20):
+        for __ in range(20):
             voucher = create_vouchers(
                 benefit_type=Benefit.PERCENTAGE,
                 benefit_value=100.00,
@@ -243,7 +265,7 @@ class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
 
     def assert_report_row(self, row, coupon, voucher):
         """ Verify that the row fields contain the right data. """
-        offer = voucher.offers.all().first()
+        offer = voucher.offers.first()
         discount_data = get_voucher_discount_info(
             offer.benefit,
             offer.condition.range.catalog.stock_records.first().price_excl_tax
@@ -262,12 +284,11 @@ class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
             get_ecommerce_url() + self.REDEMPTION_URL.format(voucher.code)
         )
         self.assertEqual(row['Note'], coupon.attr.note)
-        self.assertEqual(row['Created By'], coupon.history.first().history_user.full_name)
+        self.assertEqual(row['Created By'].decode('utf-8'), coupon.history.first().history_user.full_name)
         self.assertEqual(row['Create Date'], coupon.history.latest().history_date.strftime("%b %d, %y"))
         self.assertEqual(row['Coupon Start Date'], voucher.start_datetime.strftime("%b %d, %y"))
         self.assertEqual(row['Coupon Expiry Date'], voucher.end_datetime.strftime("%b %d, %y"))
 
-    @httpretty.activate
     def test_generate_coupon_report(self):
         """ Verify the coupon report is generated properly. """
         self.setup_coupons_for_report()
@@ -314,16 +335,20 @@ class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
             voucher = Voucher.objects.get(name=row['Coupon Name'])
             self.assert_report_row(row, self.coupon, voucher)
 
-    @httpretty.activate
+        self.assertNotIn('Catalog Query', field_names)
+        self.assertNotIn('Course Seat Types', field_names)
+        self.assertNotIn('Redeemed For Course ID', field_names)
+
     def test_report_for_inactive_coupons(self):
         """ Verify the coupon report show correct status for inactive coupons. """
+        coupon_name = 'Inačtive ćođe'
         create_vouchers(
             benefit_type=Benefit.FIXED,
             benefit_value=100.00,
             catalog=self.catalog,
             coupon=self.coupon,
             end_datetime=datetime.date(2015, 10, 30),
-            name="Inactive code",
+            name=coupon_name,
             quantity=1,
             start_datetime=datetime.date(2015, 10, 30),
             voucher_type=Voucher.SINGLE_USE
@@ -332,48 +357,38 @@ class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
         __, rows = generate_coupon_report(self.coupon_vouchers)
 
         inactive_coupon_row = rows[1]
-        self.assertEqual(inactive_coupon_row['Coupon Name'], 'Inactive code')
+        self.assertEqual(inactive_coupon_row['Coupon Name'], coupon_name)
         self.assertEqual(inactive_coupon_row['Status'], _('Inactive'))
 
-    @httpretty.activate
-    def test_generate_coupon_report_for_old_coupons(self):
-        """ Verify that the client info is present for old coupons. """
-        self.setup_coupons_for_report()
-
-        Order.objects.get(basket=self.basket).delete()
-        ProductCategory.objects.all().delete()
-
-        self.mock_course_api_response(course=self.course)
-        __, rows = generate_coupon_report(self.coupon_vouchers)
-
-        for row in rows:
-            self.assertEqual(row['Client'], self.basket.owner.username)
-            self.assertEqual(row['Category'], '')
-
-    @httpretty.activate
     def test_generate_coupon_report_for_query_coupons(self):
         """ Verify empty report fields for query coupons. """
-        query_coupon = self.create_coupon(
-            title='Query coupon',
-            quantity=1,
-            catalog_query='course:*',
-            course_seat_types='verified'
-        )
+        catalog_query = 'course:*'
+        self.mock_dynamic_catalog_course_runs_api()
+        query_coupon = self.create_catalog_coupon(catalog_query=catalog_query)
         query_coupon.history.all().update(history_user=self.user)
-        self.mock_course_api_response(course=self.course)
-        __, rows = generate_coupon_report([query_coupon.attr.coupon_vouchers])
+        field_names, rows = generate_coupon_report([query_coupon.attr.coupon_vouchers])
 
         empty_fields = (
-            'Invoiced Amount',
-            'Course ID',
-            'Organization',
-            'Price',
             'Coupon Type',
+            'Discount Amount',
             'Discount Percentage',
-            'Discount Amount'
+            'Invoiced Amount',
+            'Price',
         )
         for field in empty_fields:
             self.assertIsNone(rows[0][field])
+
+        self.assertNotIn('Course ID', field_names)
+        self.assertNotIn('Organization', field_names)
+
+        self.assertIn('Catalog Query', field_names)
+        self.assertEqual(rows[0]['Catalog Query'], catalog_query)
+
+        self.assertIn('Course Seat Types', field_names)
+        self.assertEqual(rows[0]['Course Seat Types'], 'verified')
+
+        self.assertIn('Redeemed For Course ID', field_names)
+        self.assertNotIn('Redeemed For Course ID', rows[0])
 
     def test_get_voucher_discount_info(self):
         """ Verify that get_voucher_discount_info() returns correct info. """
@@ -430,6 +445,43 @@ class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
         new_basket = self.apply_voucher(self.user, self.site, voucher)
         self.assertEqual(len(new_basket.applied_offers()), 0)
 
+    def test_single_use_redemption_count(self):
+        """Verify redemption count does not increment for other, unused, single-use vouchers."""
+        coupon = self.create_coupon(
+            title='Test single use',
+            catalog=self.catalog,
+            quantity=2
+        )
+        coupon.history.all().update(history_user=self.user)
+        vouchers = coupon.attr.coupon_vouchers.vouchers.all()
+        self.use_voucher('TEST', vouchers[0], self.user)
+        __, rows = generate_coupon_report([coupon.attr.coupon_vouchers])
+
+        # rows[0] - first voucher header row
+        # rows[1] - first voucher row with usage information
+        # rows[2] - second voucher header row
+        self.assertEqual(len(rows), 3)
+        self.assertEqual(rows[0]['Redemption Count'], 1)
+        self.assertEqual(rows[1]['Redeemed By Username'], self.user.username)
+        self.assertEqual(rows[2]['Redemption Count'], 0)
+
+    def test_generate_coupon_report_for_used_query_coupon(self):
+        """Test that used query coupon voucher reports which course was it used for."""
+        catalog_query = '*:*'
+        self.mock_dynamic_catalog_course_runs_api(query=catalog_query, course_run=self.course)
+        self.mock_dynamic_catalog_contains_api(course_run_ids=[self.verified_seat.course_id], query=catalog_query)
+        query_coupon = self.create_catalog_coupon(catalog_query=catalog_query)
+        query_coupon.history.all().update(history_user=self.user)
+        voucher = query_coupon.attr.coupon_vouchers.vouchers.first()
+        voucher.offers.first().condition.range.add_product(self.verified_seat)
+        self.use_voucher('TESTORDER4', voucher, self.user)
+        field_names, rows = generate_coupon_report([query_coupon.attr.coupon_vouchers])
+
+        self.assertIn('Redeemed For Course ID', field_names)
+        self.assertIn('Redeemed By Username', field_names)
+        self.assertEqual(rows[-1]['Redeemed By Username'], self.user.username)
+        self.assertEqual(rows[-1]['Redeemed For Course ID'], self.course.id)
+
     def test_update_voucher_offer(self):
         vouchers = create_vouchers(
             benefit_type=Benefit.PERCENTAGE,
@@ -449,7 +501,7 @@ class UtilTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockMixin, TestCase):
         self.assertEqual(voucher_offer.benefit.value, 100.00)
         self.assertEqual(voucher_offer.benefit.range.catalog, self.catalog)
 
-        new_offer = update_voucher_offer(voucher_offer, 50.00, Benefit.PERCENTAGE)
+        new_offer = update_voucher_offer(voucher_offer, 50.00, Benefit.PERCENTAGE, self.coupon)
         self.assertEqual(new_offer.benefit.type, Benefit.PERCENTAGE)
         self.assertEqual(new_offer.benefit.value, 50.00)
         self.assertEqual(new_offer.benefit.range.catalog, self.catalog)

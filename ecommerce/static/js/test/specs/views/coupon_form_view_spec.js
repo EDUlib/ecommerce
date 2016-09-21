@@ -84,16 +84,7 @@ define([
                     expect(view.updateTotalValue).toHaveBeenCalled();
                     expect(view.getSeatData).toHaveBeenCalled();
                 });
-
-                it('updateTotalValue should calculate the price and update model and form fields', function () {
-                    view.$el.find('[name=quantity]').val(5).trigger('input');
-                    view.updateTotalValue({price: 100});
-                    expect(view.$el.find('input[name=price]').val()).toEqual('500');
-                    expect(view.$el.find('input[name=total_value]').val()).toEqual('500');
-                    expect(model.get('total_value')).toEqual(500);
-                });
             });
-
 
             describe('enrollment code', function () {
                 beforeEach(function () {
@@ -109,17 +100,28 @@ define([
                     expect(visible('[name=code]')).toBe(false);
                 });
 
-                it('should show the quantity field only for single-use vouchers', function () {
-                    view.$el.find('[name=voucher_type]').val('Single use').trigger('change');
-                    expect(visible('[name=quantity]')).toBe(true);
-                    view.$el.find('[name=voucher_type]').val('Multi-use').trigger('change');
-                    expect(visible('[name=quantity]')).toBe(false);
-                    view.$el.find('[name=voucher_type]').val('Once per customer').trigger('change');
-                    expect(visible('[name=quantity]')).toBe(false);
+                it('should set model attribute category_ids on render', function () {
+                    expect(view.model.get('category_ids')[0]).toBe(4);
                 });
             });
 
-            describe('discount', function () {
+            describe('routing', function() {
+                it('should route to external link.', function() {
+                    var href = 'http://www.google.com/';
+                    spyOn(window, 'open');
+                    view.$el.append('<a href="' + href + '" class="test external-link">Google</a>');
+                    view.$('.test.external-link').click();
+                    expect(window.open).toHaveBeenCalledWith(href);
+                });
+            });
+
+            describe('discount code', function () {
+                var prepaid_invoice_fields = [
+                    '[name=invoice_number]',
+                    '[name=price]',
+                    '[name=invoice_payment_date]'
+                ];
+
                 beforeEach(function () {
                     view.$el.find('[name=code_type]').val('Discount code').trigger('change');
                 });
@@ -135,11 +137,28 @@ define([
                     expect(view.$el.find('.benefit-addon').html()).toBe('$');
                 });
 
-                it('should toggle upper limit on the benefit value input', function () {
-                    view.$el.find('[name=code_type]').val('enrollment').trigger('change');
-                    expect(view.$el.find('[name="benefit_value"]').attr('max')).toBe('100');
-                    view.$el.find('[name=benefit_type]').val('Absolute').trigger('change');
-                    expect(view.$el.find('[name="benefit_value"]').attr('max')).toBe('');
+                it('should toggle limit on the benefit value input', function () {
+                    view.$('[name=code_type]').val('enrollment').trigger('change');
+                    expect(view.$('[name="benefit_value"]').attr('max')).toBe('');
+                    expect(view.$('[name="benefit_value"]').attr('min')).toBe('');
+
+                    view.$('[name=code_type]').val('Discount code').trigger('change');
+                    expect(view.$('[name="benefit_value"]').attr('max')).toBe('100');
+                    expect(view.$('[name="benefit_value"]').attr('min')).toBe('1');
+
+                    view.$('[name=benefit_type]').val('Absolute').trigger('change');
+                    expect(view.$('[name="benefit_value"]').attr('max')).toBe('');
+                    expect(view.$('[name="benefit_value"]').attr('min')).toBe('1');
+                });
+
+                it('should toggle limit on the invoice discount value input', function () {
+                    view.$('#invoice-discount-percent').prop('checked', true).trigger('change');
+                    expect(view.$('[name="invoice_discount_value"]').attr('max')).toBe('100');
+                    expect(view.$('[name="invoice_discount_value"]').attr('min')).toBe('1');
+
+                    view.$('#invoice-discount-fixed').prop('checked', true).trigger('change');
+                    expect(view.$('[name="invoice_discount_value"]').attr('max')).toBe('');
+                    expect(view.$('[name="invoice_discount_value"]').attr('min')).toBe('1');
                 });
 
                 it('should show the code field for once-per-customer and singe-use vouchers', function () {
@@ -156,27 +175,104 @@ define([
                     expect(visible('[name=max_uses]')).toBe(true);
                 });
 
-                it('should hide quantity field when code entered and single-use voucher selected', function () {
-                    view.$el.find('[name=voucher_type]').val('Single use').trigger('change');
+                it('should hide quantity field when code entered', function () {
                     view.$el.find('[name=code]').val('E34T4GR342').trigger('input');
                     expect(visible('[name=quantity]')).toBe(false);
                     view.$el.find('[name=code]').val('').trigger('input');
                     expect(visible('[name=quantity]')).toBe(true);
                 });
 
-                it('should hide code field when quantity not 1 and single-use voucher selected', function () {
-                    view.$el.find('[name=voucher_type]').val('Single use').trigger('change');
+                it('should hide code field when quantity not 1', function () {
                     view.$el.find('[name=quantity]').val(21).trigger('change');
                     expect(visible('[name=code]')).toBe(false);
                     view.$el.find('[name=quantity]').val(1).trigger('change');
                     expect(visible('[name=code]')).toBe(true);
                 });
 
-                it('should show code field when changing to once-per-customer', function () {
+                it('should hide code field for every voucher type if quantity is not 1.', function() {
+                    view.$el.find('[name=quantity]').val(2).trigger('change');
                     view.$el.find('[name=voucher_type]').val('Single use').trigger('change');
-                    view.$el.find('[name=quantity]').val(111).trigger('change');
+                    expect(visible('[name=code]')).toBe(false);
+
+                    view.$el.find('[name=voucher_type]').val('Once per customer').trigger('change');
+                    expect(visible('[name=code]')).toBe(false);
+
+                    view.$el.find('[name=voucher_type]').val('Multi-use').trigger('change');
+                    expect(visible('[name=code]')).toBe(false);
+                });
+
+                it('should show the code field for every voucher type if quantity is 1.', function() {
+                    view.$el.find('[name=quantity]').val(1).trigger('change');
+                    view.$el.find('[name=voucher_type]').val('Single use').trigger('change');
+                    expect(visible('[name=code]')).toBe(true);
+
                     view.$el.find('[name=voucher_type]').val('Once per customer').trigger('change');
                     expect(visible('[name=code]')).toBe(true);
+
+                    view.$el.find('[name=voucher_type]').val('Multi-use').trigger('change');
+                    expect(visible('[name=code]')).toBe(true);
+                });
+
+                it('should show prepaid invoice fields when changing to Prepaid invoice type.', function() {
+                    view.$el.find('#already-invoiced').prop('checked', true).trigger('change');
+                    _.each(prepaid_invoice_fields, function(field) {
+                        expect(visible(field)).toBe(true);
+                    });
+                    expect(visible('[name=invoice_discount_value]')).toBe(false);
+                });
+
+                it('should show postpaid invoice fields when changing to Postpaid invoice type.', function() {
+                    view.$el.find('#invoice-after-redemption').prop('checked', true).trigger('change');
+                    _.each(prepaid_invoice_fields, function(field) {
+                        expect(visible(field)).toBe(false);
+                    });
+                    expect(visible('[name=invoice_discount_value]')).toBe(true);
+                });
+
+                it('should hide all invoice fields when changing to Not applicable invoice type.', function() {
+                    view.$el.find('#not-applicable').prop('checked', true).trigger('change');
+                    _.each(prepaid_invoice_fields, function(field) {
+                        expect(visible(field)).toBe(false);
+                    });
+                    expect(visible('[name=invoice_discount_value]')).toBe(false);
+                });
+
+                it('should show tax deduction source field when TSD is selected.', function() {
+                    view.$el.find('#tax-deducted').prop('checked', true).trigger('change');
+                    expect(visible('[name=tax_deducted_source_value]')).toBe(true);
+                    view.$el.find('#non-tax-deducted').prop('checked', true).trigger('change');
+                    expect(visible('[name=tax_deducted_source_value]')).toBe(false);
+                });
+            });
+
+            describe('dynamic catalog coupon', function () {
+                it('should update dynamic catalog view query with coupon catalog query', function() {
+                    model.set('catalog_query', '*:*');
+                    view.updateCatalogQuery();
+                    expect(view.dynamic_catalog_view.query).toEqual(model.get('catalog_query'));
+                });
+
+                it('should update dynamic catalog view course seat types with coupon seat types', function() {
+                    model.set('course_seat_types', ['verified']);
+                    view.updateCourseSeatTypes();
+                    expect(view.dynamic_catalog_view.seat_types).toEqual(model.get('course_seat_types'));
+                });
+
+                it('should remove dynamic catalog values from fields when toggled to single course', function() {
+                    var catalog_query = '*:*',
+                        course_seat_types = ['verified'];
+
+                    model.set('catalog_query', catalog_query);
+                    model.set('course_seat_types', course_seat_types);
+                    view.updateCatalogQuery();
+                    view.updateCourseSeatTypes();
+                    expect(view.dynamic_catalog_view.query).toEqual(catalog_query);
+                    expect(view.dynamic_catalog_view.seat_types).toEqual(course_seat_types);
+
+                    view.$('#single-course').prop('checked', true);
+                    view.toggleCatalogTypeField();
+                    expect(view.dynamic_catalog_view.query).toEqual(undefined);
+                    expect(view.dynamic_catalog_view.seat_types).toEqual([ ]);
                 });
             });
         });

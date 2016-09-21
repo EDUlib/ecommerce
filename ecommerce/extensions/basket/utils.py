@@ -53,20 +53,6 @@ def prepare_basket(request, product, voucher=None):
     return basket
 
 
-def get_certificate_type_display_value(certificate_type):
-    display_values = {
-        'audit': _('Audit'),
-        'verified': _('Verified'),
-        'professional': _('Professional'),
-        'honor': _('Honor')
-    }
-
-    if certificate_type not in display_values:
-        raise ValueError('Certificate Type [%s] not found.', certificate_type)
-
-    return display_values[certificate_type]
-
-
 def get_basket_switch_data(product):
     product_class_name = product.get_product_class().name
 
@@ -77,11 +63,26 @@ def get_basket_switch_data(product):
         switch_link_text = _('Click here to purchase multiple seats in this course')
         structure = 'standalone'
 
-    try:
-        partner_sku = StockRecord.objects.get(
-            product__course_id=product.course_id,
-            product__structure=structure).partner_sku
-    except StockRecord.DoesNotExist:
-        partner_sku = None
+    stock_records = StockRecord.objects.filter(
+        product__course_id=product.course_id,
+        product__structure=structure
+    )
 
+    # Determine the proper partner SKU to embed in the single/multiple basket switch link
+    # The logic here is a little confusing.  "Seat" products have "certificate_type" attributes, and
+    # "Enrollment Code" products have "seat_type" attributes.  If the basket is in single-purchase
+    # mode, we are working with a Seat product and must present the 'buy multiple' switch link and
+    # SKU from the corresponding Enrollment Code product.  If the basket is in multi-purchase mode,
+    # we are working with an Enrollment Code product and must present the 'buy single' switch link
+    # and SKU from the corresponding Seat product.
+    partner_sku = None
+    product_cert_type = getattr(product.attr, 'certificate_type', None)
+    product_seat_type = getattr(product.attr, 'seat_type', None)
+    for stock_record in stock_records:
+        stock_record_cert_type = getattr(stock_record.product.attr, 'certificate_type', None)
+        stock_record_seat_type = getattr(stock_record.product.attr, 'seat_type', None)
+        if (product_seat_type and product_seat_type == stock_record_cert_type) or \
+           (product_cert_type and product_cert_type == stock_record_seat_type):
+            partner_sku = stock_record.partner_sku
+            break
     return switch_link_text, partner_sku

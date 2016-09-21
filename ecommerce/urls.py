@@ -1,16 +1,16 @@
 import os
 
+from auth_backends.urls import auth_urlpatterns
 from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.auth.views import logout
-from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
-from django.views.generic import RedirectView, TemplateView
+from django.views.generic import TemplateView
 
 from ecommerce.core import views as core_views
 from ecommerce.core.url_utils import get_lms_dashboard_url
+from ecommerce.core.views import LogoutView
 from ecommerce.extensions.urls import urlpatterns as extensions_patterns
 
 
@@ -38,17 +38,13 @@ js_info_dict = {
     'packages': ('courses',),
 }
 
-# Always login via edX OpenID Connect
-login = RedirectView.as_view(url=reverse_lazy('social:begin', args=['edx-oidc']), permanent=False, query_string=True)
-
-# Use the same auth views for all logins, including those originating from the browseable API.
+# NOTE 1: Add our logout override first to ensure it is registered by Django as the actual logout view.
+# NOTE 2: These same patterns are used for rest_framework's browseable API authentication links.
 AUTH_URLS = [
-    url(r'^login/$', login, name='login'),
-    url(r'^logout/$', logout, name='logout'),
-]
+    url(r'^logout/$', LogoutView.as_view(), name='logout'),
+] + auth_urlpatterns
 
-urlpatterns = [
-    url(r'^accounts/', include(AUTH_URLS)),
+urlpatterns = AUTH_URLS + [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^auto_auth/$', core_views.AutoAuth.as_view(), name='auto_auth'),
     url(r'^api-auth/', include(AUTH_URLS, namespace='rest_framework')),
@@ -59,7 +55,6 @@ urlpatterns = [
     url(r'^health/$', core_views.health, name='health'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
-    url('', include('social.apps.django_app.urls', namespace='social')),
 ]
 
 # Install Oscar extension URLs

@@ -61,7 +61,8 @@ class Dispatcher(Dispatcher):
         """
         from_email = settings.OSCAR_FROM_EMAIL
         if site:
-            from_email = site.siteconfiguration.get_from_email()
+            #####from_email = site.siteconfiguration.get_from_email()
+            from_email = 'facturation@edulib.org'
 
         # Determine whether we are sending a HTML version too
         if messages['html']:

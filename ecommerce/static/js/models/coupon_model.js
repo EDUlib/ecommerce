@@ -3,7 +3,7 @@ define([
         'backbone.super',
         'backbone.validation',
         'jquery',
-        'jquery-cookie',
+        'js-cookie',
         'underscore',
         'moment',
         'collections/category_collection',
@@ -14,16 +14,17 @@ define([
               BackboneSuper,
               BackboneValidation,
               $,
-              $cookie,
+              Cookies,
               _,
               moment
               ) {
         'use strict';
 
         _.extend(Backbone.Validation.messages, {
-            required: gettext('This field is required'),
-            number: gettext('This value must be a number'),
-            date: gettext('This value must be a date')
+            required: gettext('This field is required.'),
+            number: gettext('This value must be a number.'),
+            date: gettext('This value must be a date.'),
+            seat_types: gettext('At least one seat type must be selected.'),
         });
         _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
 
@@ -37,31 +38,74 @@ define([
                 code: '',
                 price: 0,
                 total_value: 0,
-                max_uses: 1
+                max_uses: 1,
+                seats: [],
+                course_seats: [],
+                course_seat_types: []
             },
 
             validation: {
                 category: {required: true},
                 course_id: {
                     pattern: 'courseId',
-                    msg: gettext('A valid course ID is required')
+                    msg: gettext('A valid course ID is required'),
+                    required: function () {
+                        return this.get('catalog_type') === 'Single course';
+                    }
                 },
                 title: {required: true},
                 client: {required: true},
                 // seat_type is for validation only, stock_record_ids holds the values
-                seat_type: {required: true},
+                seat_type: {
+                    required: function () {
+                        return this.get('catalog_type') === 'Single course';
+                    }
+                },
                 quantity: {pattern: 'number'},
-                price: {pattern: 'number'},
                 benefit_value: {
                     pattern: 'number',
                     required: function () {
                         return this.get('coupon_type') === 'Discount code';
                     }
                 },
+                invoice_type: {required: true},
+                invoice_number: {
+                    required: function() {
+                        return this.isPrepaidInvoiceType();
+                    }
+                },
+                price: {
+                    pattern: 'number',
+                    required: function() {
+                        return this.isPrepaidInvoiceType();
+                    }
+                },
+                invoice_payment_date: {
+                    required: function() {
+                        return this.isPrepaidInvoiceType();
+                    }
+                },
+                invoice_discount_value: {
+                    pattern: 'number',
+                    required: function () {
+                        return this.get('invoice_type') === 'Postpaid';
+                    }
+                },
                 code: {
+                    pattern: /^[a-zA-Z0-9]+$/,
                     required: false,
-                    rangeLength: [8, 16],
-                    msg: gettext('Code field must be empty or between 8 and 16 characters')
+                    rangeLength: [1, 16],
+                    msg: gettext('This field must be empty or contain 1-16 alphanumeric characters.')
+                },
+                catalog_query: {
+                    required: function () {
+                        return this.get('catalog_type') === 'Multiple courses';
+                    }
+                },
+                course_seat_types: function (val) {
+                    if (this.get('catalog_type') === 'Multiple courses' && val.length === 0) {
+                        return Backbone.Validation.messages.seat_types;
+                    }
                 },
                 start_date: function (val) {
                     var startDate,
@@ -96,10 +140,16 @@ define([
             },
 
             initialize: function () {
+                this.on('change:categories', this.updateCategory, this);
                 this.on('change:voucher_type', this.changeVoucherType, this);
                 this.on('change:vouchers', this.updateVoucherData);
                 this.on('change:seats', this.updateSeatData);
                 this.on('change:quantity', this.updateTotalValue(this.getSeatPrice));
+                this.on('change:payment_information', this.updatePaymentInformation);
+            },
+
+            isPrepaidInvoiceType: function() {
+                return this.get('invoice_type') === 'Prepaid';
             },
 
             /**
@@ -112,20 +162,45 @@ define([
             },
 
             getSeatPrice: function () {
-                return this.get('seats')[0].price;
+                var seats = this.get('seats');
+                return seats[0] ? seats[0].price : '';
             },
 
             updateTotalValue: function (seat_price) {
                 this.set('total_value', this.get('quantity') * seat_price);
             },
 
+            getCertificateType: function(seat_data) {
+                var seat_type = _.findWhere(seat_data, {'name': 'certificate_type'});
+                return seat_type ? seat_type.value : '';
+            },
+
+            getCourseID: function(seat_data) {
+                var course_id = _.findWhere(seat_data, {'name': 'course_key'});
+                return course_id ? course_id.value : '';
+            },
+
+            updateCategory: function() {
+                var categoryID = this.get('categories')[0].id;
+                this.set('category', categoryID);
+                this.set('category_ids', [categoryID]);
+            },
+
             updateSeatData: function () {
-                var seat_data = this.get('seats')[0].attribute_values,
-                    seat_type = _.findWhere(seat_data, {'name': 'certificate_type'}),
-                    course_id = _.findWhere(seat_data, {'name': 'course_key'});
-                this.set('seat_type', seat_type ? seat_type.value : '');
-                this.set('course_id', course_id ? course_id.value : '');
-                this.updateTotalValue(this.getSeatPrice());
+                var seat_data,
+                    seats = this.get('seats');
+
+                this.set('catalog_type', this.has('catalog_query') ? 'Multiple courses': 'Single course');
+
+                if (this.get('catalog_type') === 'Single course') {
+                    if (seats[0]) {
+                        seat_data = seats[0].attribute_values;
+
+                        this.set('seat_type', this.getCertificateType(seat_data));
+                        this.set('course_id', this.getCourseID(seat_data));
+                        this.updateTotalValue(this.getSeatPrice());
+                    }
+                }
             },
 
             updateVoucherData: function () {
@@ -138,45 +213,62 @@ define([
                 this.set('quantity', _.size(vouchers));
                 this.updateTotalValue(this.getSeatPrice());
                 if (this.get('coupon_type') === 'Discount code') {
-                    this.set('benefit_type', voucher.benefit[0]);
-                    this.set('benefit_value', voucher.benefit[1]);
+                    this.set('benefit_type', voucher.benefit.type);
+                    this.set('benefit_value', voucher.benefit.value);
                 }
 
                 if (code_count > 1 || _.size(vouchers) === 1) {
                     this.set('code', voucher.code);
                 }
+
+                if (voucher.usage === 'Single use') {
+                    this.set('max_uses', 1);
+                }
             },
 
-            save: function (options) {
-                var data;
+            updatePaymentInformation: function() {
+                var payment_information = this.get('payment_information'),
+                    invoice = payment_information.Invoice,
+                    tax_deducted = invoice.tax_deducted_source ? 'Yes' : 'No';
+                this.set({
+                    'invoice_type': invoice.type,
+                    'invoice_discount_type': invoice.discount_type,
+                    'invoice_discount_value': invoice.discount_value,
+                    'invoice_number': invoice.number,
+                    'invoice_payment_date': invoice.payment_date,
+                    'tax_deducted_source': invoice.tax_deducted_source,
+                    'tax_deduction': tax_deducted,
+                });
+            },
 
+            save: function (attributes, options) {
                 _.defaults(options || (options = {}), {
                     // The API requires a CSRF token for all POST requests using session authentication.
-                    headers: {'X-CSRFToken': $.cookie('ecommerce_csrftoken')},
+                    headers: {'X-CSRFToken': Cookies.get('ecommerce_csrftoken')},
                     contentType: 'application/json'
                 });
 
-                data = this.toJSON();
-                data.client_username = this.get('client');
-                data.start_date = moment.utc(this.get('start_date'));
-                data.end_date = moment.utc(this.get('end_date'));
-                data.category_ids = [ this.get('category') ];
+                if (!options.patch){
+                    this.set('start_date', moment.utc(this.get('start_date')));
+                    this.set('end_date', moment.utc(this.get('end_date')));
 
-                // Enrollment code always gives 100% discount
-                switch (this.get('coupon_type')) {
-                    case 'Enrollment code':
-                        // this is the price paid for the code(s)
-                        data.benefit_type = 'Percentage';
-                        data.benefit_value = 100;
-                        break;
-                    case 'Discount code':
-                        data.benefit_type = this.get('benefit_type');
-                        data.benefit_value = this.get('benefit_value');
-                        break;
+                    if (this.get('coupon_type') === 'Enrollment code') {
+                        this.set('benefit_type', 'Percentage');
+                        this.set('benefit_value', 100);
+                    }
+
+                    options.data = JSON.stringify(this.toJSON());
+                } else {
+                    if (_.has(attributes, 'start_date')) {
+                        attributes.start_date = moment.utc(attributes.start_date);
+                    }
+
+                    if (_.has(attributes, 'end_date')) {
+                        attributes.end_date = moment.utc(attributes.end_date);
+                    }
                 }
 
-                options.data = JSON.stringify(data);
-                return this._super(null, options);
+                return this._super(attributes, options);
             }
         });
     }

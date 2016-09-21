@@ -74,6 +74,10 @@ class CouponsCreatePage(EcommerceAppPage):
 
             self.q(css="input[name='benefit_value']").fill('50')
 
+        self.q(css="input[name='invoice_number']").fill('1001')
+        self.q(css="input[name='invoice_payment_date']").fill(str(DEFAULT_END_DATE))
+        self.q(css="input[name='price']").fill('100')
+
         self.q(css="div.form-actions > button.btn").click()
 
         self.wait_for_ajax()
@@ -131,11 +135,17 @@ class RedeemVoucherPage(EcommerceAppPage):
     @wait_for_js
     def proceed_to_enrollment(self):
         """ Enroll user to a course and redeem voucher code in the process """
+        WebDriverWait(self.browser, 10).until(
+            EC.presence_of_element_located((By.ID, 'RedeemEnrollment'))
+        )
         self.browser.find_element_by_id('RedeemEnrollment').click()
         self.wait_for_ajax()
 
     @wait_for_js
     def proceed_to_checkout(self):
         """ Purchase a course and redeem voucher code in the process """
+        WebDriverWait(self.browser, 10).until(
+            EC.presence_of_element_located((By.ID, 'PurchaseCertificate'))
+        )
         self.browser.find_element_by_id('PurchaseCertificate').click()
         self.wait_for_ajax()

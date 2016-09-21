@@ -25,6 +25,8 @@ from ecommerce.extensions.voucher.models import OrderLineVouchers
 from ecommerce.extensions.voucher.utils import create_vouchers
 from ecommerce.notifications.notifications import send_notification
 
+from decimal import *
+
 Benefit = get_model('offer', 'Benefit')
 Product = get_model('catalogue', 'Product')
 Range = get_model('offer', 'Range')
@@ -246,6 +248,7 @@ class EnrollmentFulfillmentModule(BaseFulfillmentModule):
                 )
                 line.set_status(LINE.FULFILLMENT_TIMEOUT_ERROR)
         logger.info("Finished fulfilling 'Seat' product types for order [%s]", order.number)
+        self.send_email(order, course_key)
         return order, lines
 
     def revoke_line(self, line):
@@ -293,6 +296,38 @@ class EnrollmentFulfillmentModule(BaseFulfillmentModule):
 
         return False
 
+    def send_email(self, order, course_key):
+        """ Sends an email with enrollment code order information. """
+        # Note (multi-courses): Change from a course_name to a list of course names.
+        product = order.lines.first().product
+        course = Course.objects.get(id=product.attr.course_key)
+
+        course_no_taxes = Decimal(order.total_incl_tax) / Decimal(1.14975)
+        tps_taxes = Decimal(order.total_incl_tax) / Decimal(1.14975) * Decimal(0.05)
+        tvq_taxes = Decimal(order.total_incl_tax) / Decimal(1.14975) * Decimal(0.09975)
+
+        course_no_taxes = "%.2f" % course_no_taxes
+        tps_taxes = "%.2f" % tps_taxes 
+        tvq_taxes = "%.2f" % tvq_taxes
+
+        send_notification(
+            order.user,
+            'COURSE_PURCHASED',
+            context={
+                'contact_url': get_lms_url('/contact'),
+                'course_title': course_key,
+                'course_price': "%.2f" % Decimal(order.total_incl_tax),
+                'order_number': order.number,
+                'order_currency': order.currency,
+                'partner_name': order.site.siteconfiguration.partner.name,
+                'lms_url': get_lms_url(),
+                'receipt_page_url': get_lms_url('{}?orderNum={}'.format(settings.RECEIPT_PAGE_PATH, order.number)),
+                'course_no_taxes': course_no_taxes,
+                'tps': tps_taxes,
+                'tvq': tvq_taxes,
+            },
+            site=order.site
+        )
 
 class CouponFulfillmentModule(BaseFulfillmentModule):
     """ Fulfillment Module for coupons. """

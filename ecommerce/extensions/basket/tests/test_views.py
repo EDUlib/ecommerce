@@ -23,6 +23,7 @@ from ecommerce.core.url_utils import get_lms_enrollment_api_url
 from ecommerce.core.url_utils import get_lms_url
 from ecommerce.coupons.tests.mixins import CouponMixin
 from ecommerce.courses.tests.factories import CourseFactory
+from ecommerce.extensions.basket.utils import get_basket_switch_data
 from ecommerce.extensions.catalogue.tests.mixins import CourseCatalogTestMixin
 from ecommerce.extensions.offer.utils import format_benefit_value
 from ecommerce.extensions.payment.tests.processors import DummyProcessor
@@ -84,20 +85,6 @@ class BasketSingleItemViewTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockM
         )
         json_body = json.dumps({'mode': mode, 'is_active': False})
         httpretty.register_uri(httpretty.GET, url, body=json_body, content_type='application/json')
-
-    def mock_enrollment_api_error(self, error):
-        """ Mock Enrollment api call which raises error when called """
-        self.assertTrue(httpretty.is_enabled())
-
-        def callback(request, uri, headers):  # pylint: disable=unused-argument
-            raise error
-
-        url = '{host}/{username},{course_id}'.format(
-            host=get_lms_enrollment_api_url(),
-            username=self.user.username,
-            course_id=self.course.id
-        )
-        httpretty.register_uri(httpretty.GET, url, body=callback, content_type='application/json')
 
     def test_login_required(self):
         """ The view should redirect to login page if the user is not logged in. """
@@ -208,7 +195,8 @@ class BasketSingleItemViewTests(CouponMixin, CourseCatalogTestMixin, LmsApiMockM
         """
         Verify the view returns HTTP status 400 if the Enrollment API is not available.
         """
-        self.mock_enrollment_api_error(error)
+        self.request.user = self.user
+        self.mock_enrollment_api_error(self.request, self.user, self.course.id, error)
         url = '{path}?sku={sku}'.format(path=self.path, sku=self.stock_record.partner_sku)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 400)
@@ -290,6 +278,20 @@ class BasketSummaryViewTests(CourseCatalogTestMixin, LmsApiMockMixin, ApiMockMix
         self.assertEqual(response.status_code, 200)
         line_data = response.context['formset_lines_data'][0][1]
         self.assertEqual(line_data['seat_type'], _(enrollment_code.attr.seat_type.capitalize()))
+
+    def test_basket_switch_data(self):
+        """Verify the correct basket switch data (single vs. multi quantity) is retrieved."""
+        course = CourseFactory()
+        toggle_switch(ENROLLMENT_CODE_SWITCH, True)
+        course.create_or_update_seat('invalid', False, 10, self.partner)
+        seat = course.create_or_update_seat('verified', False, 10, self.partner)
+        seat_sku = StockRecord.objects.get(product=seat).partner_sku
+        enrollment_code = Product.objects.get(product_class__name=ENROLLMENT_CODE_PRODUCT_CLASS_NAME)
+        ec_sku = StockRecord.objects.get(product=enrollment_code).partner_sku
+        __, partner_sku = get_basket_switch_data(seat)
+        self.assertEqual(partner_sku, ec_sku)
+        __, partner_sku = get_basket_switch_data(enrollment_code)
+        self.assertEqual(partner_sku, seat_sku)
 
     @ddt.data(
         (Benefit.PERCENTAGE, 100),

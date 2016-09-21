@@ -38,9 +38,10 @@ class CourseTests(CourseCatalogTestMixin, TestCase):
         self.assertEqual(len(course.seat_products), 0)
 
         # Create the seat products
+        toggle_switch(ENROLLMENT_CODE_SWITCH, True)
         seats = [course.create_or_update_seat('honor', False, 0, self.partner),
                  course.create_or_update_seat('verified', True, 50, self.partner)]
-        self.assertEqual(course.products.count(), 3)
+        self.assertEqual(course.products.count(), 4)
 
         # The property should return only the child seats.
         self.assertEqual(set(course.seat_products), set(seats))
@@ -141,6 +142,12 @@ class CourseTests(CourseCatalogTestMixin, TestCase):
         toggle_switch(ENROLLMENT_CODE_SWITCH, True)
         course.create_or_update_seat(seat_type, True, price, self.partner)
 
+        enrollment_code = Product.objects.get(product_class__name=ENROLLMENT_CODE_PRODUCT_CLASS_NAME)
+        self.assertEqual(enrollment_code.attr.course_key, course.id)
+        self.assertEqual(enrollment_code.attr.seat_type, seat_type)
+
+        # Second time should skip over the enrollment code creation logic but result in the same data
+        course.create_or_update_seat(seat_type, True, price, self.partner)
         enrollment_code = Product.objects.get(product_class__name=ENROLLMENT_CODE_PRODUCT_CLASS_NAME)
         self.assertEqual(enrollment_code.attr.course_key, course.id)
         self.assertEqual(enrollment_code.attr.seat_type, seat_type)

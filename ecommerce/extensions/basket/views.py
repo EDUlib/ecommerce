@@ -8,15 +8,14 @@ from django.utils.translation import ugettext_lazy as _
 from requests.exceptions import ConnectionError, Timeout
 from opaque_keys.edx.keys import CourseKey
 from oscar.apps.basket.views import *  # pylint: disable=wildcard-import, unused-wildcard-import
-from edx_rest_api_client.client import EdxRestApiClient
 from slumber.exceptions import SlumberBaseException
 
 from ecommerce.core.constants import ENROLLMENT_CODE_PRODUCT_CLASS_NAME, SEAT_PRODUCT_CLASS_NAME
-from ecommerce.core.url_utils import get_lms_url, get_lms_enrollment_base_api_url
-from ecommerce.coupons.views import get_voucher_from_code
-from ecommerce.courses.utils import get_course_info_from_lms, mode_for_seat
+from ecommerce.core.url_utils import get_lms_url
+from ecommerce.coupons.views import get_voucher_and_products_from_code
+from ecommerce.courses.utils import get_certificate_type_display_value, get_course_info_from_lms, mode_for_seat
 from ecommerce.extensions.analytics.utils import prepare_analytics_data
-from ecommerce.extensions.basket.utils import get_certificate_type_display_value, prepare_basket, get_basket_switch_data
+from ecommerce.extensions.basket.utils import prepare_basket, get_basket_switch_data
 from ecommerce.extensions.offer.utils import format_benefit_value
 from ecommerce.extensions.partner.shortcuts import get_partner_for_site
 
@@ -40,50 +39,40 @@ class BasketSingleItemView(View):
             return HttpResponseBadRequest(_('No SKU provided.'))
 
         if code:
-            voucher, __ = get_voucher_from_code(code=code)
+            voucher, __ = get_voucher_and_products_from_code(code=code)
         else:
             voucher = None
 
         try:
             product = StockRecord.objects.get(partner=partner, partner_sku=sku).product
-            course_key = product.attr.course_key
-
-            api = EdxRestApiClient(
-                get_lms_enrollment_base_api_url(),
-                oauth_access_token=request.user.access_token,
-                append_slash=False
-            )
-            logger.debug(
-                'Getting enrollment information for [%s] in [%s].',
-                request.user.username,
-                course_key
-            )
-            status = api.enrollment(','.join([request.user.username, course_key])).get()
-            username = request.user.username
-            seat_type = mode_for_seat(product)
-            if status and status.get('mode') == seat_type and status.get('is_active'):
-                logger.warning(
-                    'User [%s] attempted to repurchase the [%s] seat of course [%s]',
-                    username,
-                    seat_type,
-                    course_key
-                )
-                return HttpResponseBadRequest(_('You are already enrolled in {course}.').format(
-                    course=product.course.name))
         except StockRecord.DoesNotExist:
             return HttpResponseBadRequest(_('SKU [{sku}] does not exist.').format(sku=sku))
-        except (ConnectionError, SlumberBaseException, Timeout) as ex:
-            logger.exception(
-                'Failed to retrieve enrollment details for [%s] in course [%s], Because of [%s]',
-                request.user.username,
-                course_key,
-                ex,
-            )
-            return HttpResponseBadRequest(_('An error occurred while retrieving enrollment details. Please try again.'))
+
+        # If the product isn't available then there's no reason to continue with the basket addition
         purchase_info = request.strategy.fetch_for_product(product)
         if not purchase_info.availability.is_available_to_buy:
-            return HttpResponseBadRequest(_('Product [{product}] not available to buy.').format(product=product.title))
+            msg = _('Product [{product}] not available to buy.').format(product=product.title)
+            return HttpResponseBadRequest(msg)
 
+        # If the product is not an Enrollment Code, we check to see if the user is already
+        # enrolled to prevent double-enrollment and/or accidental coupon usage
+        if product.get_product_class().name != ENROLLMENT_CODE_PRODUCT_CLASS_NAME:
+            try:
+                if request.user.is_user_already_enrolled(request, product):
+                    logger.warning(
+                        'User [%s] attempted to repurchase the [%s] seat of course [%s]',
+                        request.user.username,
+                        mode_for_seat(product),
+                        product.attr.course_key
+                    )
+                    msg = _('You are already enrolled in {course}.').format(course=product.course.name)
+                    return HttpResponseBadRequest(msg)
+            except (ConnectionError, SlumberBaseException, Timeout):
+                msg = _('An error occurred while retrieving enrollment details. Please try again.')
+                return HttpResponseBadRequest(msg)
+
+        # At this point we're either adding an Enrollment Code product to the basket,
+        # or the user is adding a Seat product for which they are not already enrolled
         prepare_basket(request, product, voucher)
         return HttpResponseRedirect(reverse('basket:summary'), status=303)
 

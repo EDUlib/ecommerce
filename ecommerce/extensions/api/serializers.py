@@ -1,11 +1,11 @@
 """Serializers for data manipulated by ecommerce API endpoints."""
+from __future__ import unicode_literals
+
 from decimal import Decimal
 import logging
 
 from dateutil.parser import parse
 from django.db import transaction
-from django.http import Http404
-from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from oscar.core.loading import get_model, get_class
@@ -362,7 +362,6 @@ class PartnerSerializer(serializers.ModelSerializer):
 
 class CatalogSerializer(serializers.ModelSerializer):
     """ Serializer for Catalogs. """
-
     products = serializers.SerializerMethodField()
 
     class Meta(object):
@@ -377,6 +376,14 @@ class CatalogSerializer(serializers.ModelSerializer):
         )
 
 
+class BenefitSerializer(serializers.ModelSerializer):
+    value = serializers.IntegerField()
+
+    class Meta(object):
+        model = Benefit
+        fields = ('type', 'value')
+
+
 class VoucherSerializer(serializers.ModelSerializer):
     is_available_to_user = serializers.SerializerMethodField()
     benefit = serializers.SerializerMethodField()
@@ -387,7 +394,8 @@ class VoucherSerializer(serializers.ModelSerializer):
         return obj.is_available_to_user(user=request.user)
 
     def get_benefit(self, obj):
-        return (obj.offers.first().benefit.type, obj.offers.first().benefit.value)
+        benefit = obj.offers.first().benefit
+        return BenefitSerializer(benefit).data
 
     def get_redeem_url(self, obj):
         url = get_ecommerce_url('/coupons/offer/')
@@ -428,6 +436,7 @@ class CouponSerializer(ProductPaymentInfoMixin, serializers.ModelSerializer):
     num_uses = serializers.SerializerMethodField()
     catalog_query = serializers.SerializerMethodField()
     course_seat_types = serializers.SerializerMethodField()
+    payment_information = serializers.SerializerMethodField()
 
     def retrieve_offer(self, obj):
         """Helper method to retrieve the offer from coupon. """
@@ -460,13 +469,7 @@ class CouponSerializer(ProductPaymentInfoMixin, serializers.ModelSerializer):
         return serializer.data
 
     def get_client(self, obj):
-        basket = Basket.objects.filter(lines__product_id=obj.id).first()
-        try:
-            order = get_object_or_404(Order, basket=basket)
-            invoice = get_object_or_404(Invoice, order=order)
-            return invoice.business_client.name
-        except Http404:
-            return basket.owner.username
+        return Invoice.objects.get(order__basket__lines__product=obj).business_client.name
 
     def get_vouchers(self, obj):
         vouchers = obj.attr.coupon_vouchers.vouchers.all()
@@ -493,14 +496,25 @@ class CouponSerializer(ProductPaymentInfoMixin, serializers.ModelSerializer):
 
     def get_course_seat_types(self, obj):
         offer = self.retrieve_offer(obj)
-        return offer.condition.range.course_seat_types
+        course_seat_types = offer.condition.range.course_seat_types
+        return course_seat_types.split(',') if course_seat_types else course_seat_types
+
+    def get_payment_information(self, obj):
+        """
+        Retrieve the payment information.
+        Currently only invoices are supported, in the event of adding another
+        payment processor append it to the response dictionary.
+        """
+        invoice = Invoice.objects.filter(order__basket__lines__product=obj).first()
+        response = {'Invoice': InvoiceSerializer(invoice).data}
+        return response
 
     class Meta(object):
         model = Product
         fields = (
             'id', 'title', 'coupon_type', 'last_edited', 'seats', 'client',
             'price', 'vouchers', 'categories', 'note', 'max_uses', 'num_uses',
-            'catalog_query', 'course_seat_types'
+            'catalog_query', 'course_seat_types', 'payment_information'
         )
 
 
@@ -511,3 +525,8 @@ class CheckoutSerializer(serializers.Serializer):  # pylint: disable=abstract-me
 
     def get_payment_form_data(self, obj):
         return obj['payment_form_data']
+
+
+class InvoiceSerializer(serializers.ModelSerializer):
+    class Meta(object):
+        model = Invoice

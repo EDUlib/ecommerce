@@ -21,6 +21,11 @@ class InvalidCybersourceDecision(GatewayError):
     """The decision returned by CyberSource was not recognized."""
     pass
 
+# Added by EDUlib
+class InvalidPaysafeDecision(GatewayError):
+    """The decision returned by Paysafe was not recognized."""
+    pass
+# Added by EDUlib
 
 class InvalidNetbanxDecision(GatewayError):
     """The decision returned by CyberSource was not recognized."""
