@@ -601,6 +601,10 @@ msgstr "Merci. Nous espérons que vous apprécierez le cours!"
 msgid "%(platform_name)s team "
 msgstr "équipe %(platform_name)s"
 
+#: templates/customer/emails/commtype_course_purchased_body.html
+msgid "Invoiced Amount"
+msgstr "Montant facturé"
+
 #: templates/customer/emails/commtype_course_purchased_body.html:27
 #, python-format
 msgid ""
