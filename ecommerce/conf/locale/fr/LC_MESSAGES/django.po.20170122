@@ -558,72 +558,72 @@ msgstr "Se déconnecter"
 #: templates/customer/email_base.html
 #, python-format
 msgid "Copyright © %(year)s %(platform_name)s. All rights reserved."
-msgstr "Copyright © %(year)s %(platform_name)s. Tous droits réservés."
+msgstr ""
 
-#: templates/customer/emails/commtype_course_purchased_body.html:9
-#: templates/customer/emails/commtype_course_purchased_body.txt:4
+#: templates/customer/emails/commtype_course_purchased_body.html
+#: templates/customer/emails/commtype_course_purchased_body.txt
 #, python-format
 msgid "Hi %(full_name)s,"
-msgstr "Bonjour %(full_name)s,"
+msgstr ""
 
-#: templates/customer/emails/commtype_course_purchased_body.html:11
-#: templates/customer/emails/commtype_course_purchased_body.txt:6
+#: templates/customer/emails/commtype_course_purchased_body.html
+#: templates/customer/emails/commtype_course_purchased_body.txt
 #, python-format
 msgid ""
 "Thank you for purchasing %(course_title)s. The charge below will appear on "
 "your next credit or debit card statement with a company name of "
 "%(platform_name)s."
-msgstr "Merci pour l'achat de %(course_title)s. Le montant ci-dessous apparaîtra sur votre prochain relevé de carte de crédit ou de carte de débit sous le nom de %(platform_name)s."
+msgstr ""
 
-#: templates/customer/emails/commtype_course_purchased_body.html:13
-#: templates/customer/emails/commtype_course_purchased_body.txt:8
+#: templates/customer/emails/commtype_course_purchased_body.html
+#: templates/customer/emails/commtype_course_purchased_body.txt
 #, python-format
 msgid ""
 "You can access your course and complete your verification (if required) on "
 "your %(platform_name)s dashboard. "
-msgstr "Vous pouvez accéder à votre cours et compléter votre vérification (si nécessaire) sur votre tableau de bord %(platform_name)s."
+msgstr ""
 
-#: templates/customer/emails/commtype_course_purchased_body.html:14
-#: templates/customer/emails/commtype_course_purchased_body.txt:9
+#: templates/customer/emails/commtype_course_purchased_body.html
+#: templates/customer/emails/commtype_course_purchased_body.txt
 #, python-format
 msgid ""
 "To explore other great courses, visit the %(platform_name)s website. More "
 "courses are added every day!"
-msgstr "Pour explorer d'autres cours, visitez le site web %(platform_name)s. De nouveaux cours y sont ajoutés régulièrement!"
+msgstr ""
 
-#: templates/customer/emails/commtype_course_purchased_body.html:16
-#: templates/customer/emails/commtype_course_purchased_body.txt:11
+#: templates/customer/emails/commtype_course_purchased_body.html
+#: templates/customer/emails/commtype_course_purchased_body.txt
 msgid "Thank you. We hope you enjoy the course!"
-msgstr "Merci. Nous espérons que vous apprécierez le cours!"
+msgstr ""
 
-#: templates/customer/emails/commtype_course_purchased_body.html:17
+#: templates/customer/emails/commtype_course_purchased_body.html
 #, python-format
 msgid "%(platform_name)s team "
-msgstr "équipe %(platform_name)s"
+msgstr ""
 
-#: templates/customer/emails/commtype_course_purchased_body.html:27
+#: templates/customer/emails/commtype_course_purchased_body.html
 #, python-format
 msgid ""
 "You are receiving this email because you purchased a seat in the "
 "%(platform_name)s course %(course_title)s."
-msgstr "Vous recevez ce courriel parce que vous avez acheté une place dans le cours %(course_title)s de %(platform_name)s."
+msgstr ""
 
-#: templates/customer/emails/commtype_course_purchased_body.txt:2
+#: templates/customer/emails/commtype_course_purchased_body.txt
 msgid "Receipt Confirmation for: "
-msgstr "Confirmation de reçu pour:"
+msgstr ""
 
-#: templates/customer/emails/commtype_course_purchased_body.txt:13
+#: templates/customer/emails/commtype_course_purchased_body.txt
 #, python-format
 msgid "%(platform_name)s team"
-msgstr "équipe %(platform_name)s"
+msgstr ""
 
-#: templates/customer/emails/commtype_course_purchased_body.txt:15
+#: templates/customer/emails/commtype_course_purchased_body.txt
 msgid "The edX team"
-msgstr "L'équipe EDUlib"
+msgstr "L'équipe edX"
 
-#: templates/customer/emails/commtype_course_purchased_subject.txt:2
+#: templates/customer/emails/commtype_course_purchased_subject.txt
 msgid "Order Placed"
-msgstr "Commande enregistrée"
+msgstr ""
 
 #: templates/customer/emails/commtype_credit_receipt_body.html
 msgid "Payment Confirmation"
