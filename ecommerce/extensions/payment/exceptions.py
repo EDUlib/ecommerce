@@ -59,3 +59,9 @@ class InvalidBasketError(PaymentError):
 class AuthorizationError(PaymentError):
     """ Authorization was declined. """
     pass
+
+# Added by EDUlib
+class InvalidPaysafeDecision(GatewayError):
+    """The decision returned by Paysafe was not recognized."""
+    pass
+# Added by EDUlib
