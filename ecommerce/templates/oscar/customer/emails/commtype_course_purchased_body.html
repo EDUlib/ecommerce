@@ -3,29 +3,70 @@
 {% block body %}
 <!-- Message Body -->
 <tr>
-    <td class="container-padding" bgcolor="#ffffff" style="background-color: #ffffff; padding-left: 30px; padding-right: 30px; font-size: 13px; line-height: 20px; font-family: Open Sans, sans-serif; color: #333; border-radius: 5px;" align="left">
+    <td class="container-padding" bgcolor="#ffffff" style="background-color: #ffffff; padding-left: 30px; padding-right: 30px; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; border-radius: 5px;" align="left">
         <br>
         <!--/message HTML content -->
         <p>{% filter force_escape %}{% blocktrans %}Hi {{full_name}},{% endblocktrans %}{% endfilter %}</p>
         <br>
-        <p>{% filter force_escape %}{% blocktrans with course_title=course_title platform_name=platform_name %}Thank you for purchasing {{course_title}}. A charge will appear on your credit or debit card statement with a company name of "{{platform_name}}".{% endblocktrans %}{% endfilter %}</p>
+        <p>{% blocktrans with course_title=course_title platform_name=platform_name %}Thank you for purchasing {{course_title}}. The charge below will appear on your next credit or debit card statement with a company name of {{platform_name}}.{% endblocktrans %}</p>
+        
+        <table style="width:100%;">
+            <tr>
+                <th style="text-align: left; font-weight: bold; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
+                    {% trans "Order Number" %}
+                </th>
+                <td style="text-align: right; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">{{order_number}}</td>
+            </tr>
+            <tr>
+                <th style="text-align: left; font-weight: bold; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
+                    {% trans "Order information" %}
+                </th>
+                <td style="text-align: right; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">{{course_title}}</td>
+            </tr>
+            <tr>
+                <th style="text-align: left; font-weight: bold; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
+                    {% trans "Price (excl tax)" %}
+                </th>
+                <td style="text-align: right; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
+                    {{course_no_taxes}} {{order_currency}}
+                </td>
+            </tr>
+            <tr>
+                <th style="text-align: left; font-weight: bold; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">TPS (108160995 RT0001)</th>
+                <td style="text-align: right; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
+                    {{tps}} {{order_currency}}
+                </td>
+            </tr>
+            <tr>
+                <th style="text-align: left; font-weight: bold; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">TVQ (1006011132 TQ0005)</th>
+                <td style="text-align: right; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
+                    {{tvq}} {{order_currency}}
+                </td>
+            </tr>
+           <tr>
+                <th style="text-align: left; font-weight: bold; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">{% trans "Invoiced Amount" %}</th>
+                <td style="text-align: right; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
+                    {{course_price}} {{order_currency}}
+                </td>
+            </tr>
+        </table>
+        
+        
+        <p>{% blocktrans %}You can access your course and complete your verification (if required) on your {{platform_name}} dashboard. {% endblocktrans %} </p>
+        <a href="http://ec2-52-60-96-25.ca-central-1.compute.amazonaws.com/dashboard">{% trans "Dashboard"%}</a>
+        <p>{% blocktrans %}To explore other great courses, visit the {{platform_name}} website. More courses are added every day!{% endblocktrans %}</p>
+        <a href="http://ec2-52-60-96-25.ca-central-1.compute.amazonaws.com/">{% blocktrans %}{{platform_name}}{% endblocktrans %}</a>
         <br>
-        <p>{% filter force_escape %}{% blocktrans %}You can access your course and complete your verification (if required) on your {{platform_name}} dashboard. {% endblocktrans %}{% endfilter %} </p>
-        <p>{% filter force_escape %}{% blocktrans %}To explore other great courses, visit the {{platform_name}} website. More courses are added every day!{% endblocktrans %}{% endfilter %}</p>
-        <br>
-        <a href="{{ receipt_page_url }}" style="color: #ffffff; text-decoration: none;">
-            {% trans "View Payment Information" as tmsg %}{{ tmsg | force_escape }}
-        </a>
-        <br>
-        <p>{% trans "Thank you. We hope you enjoy the course!" as tmsg %}{{ tmsg | force_escape }}</p>
-        <p>{% filter force_escape %}{% blocktrans %}{{platform_name}} team {% endblocktrans %}{% endfilter %}</p>
+        <p>{% trans "Thank you. We hope you enjoy the course!" %}</p>
+        <p style="text-align:center;"><img alt="{{platform_name}}" src="http://ec2-52-60-96-25.ca-central-1.compute.amazonaws.com//static/images/bulk_email/edulib_entete.gif" width="200" height="60" style="border:0;" /></p>
+        <!--<p>{% trans "The edX team"%}</p>-->
         <!--/message HTML content -->
         <br><br>
     </td>
 </tr>
 
 <tr>
-    <td class="footer-padding" style="padding-left: 30px; padding-right: 30px; font-size: 13px; line-height: 20px; font-family: Open Sans, sans-serif; color: #002D40; background-color: #f3f3f3;" align="left">
+    <td class="footer-padding" style="padding-left: 30px; padding-right: 30px; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #002D40; background-color: #f3f3f3;" align="left">
         <!--footer content -->
         <br>
         <p>{% filter force_escape %}{% blocktrans with course_title=course_title platform_name=platform_name %}You are receiving this email because you purchased a seat in the {{platform_name}} course {{course_title}}.{% endblocktrans %}{% endfilter %}</p>
@@ -37,4 +78,3 @@
 <br>
 <br>
 {% endblock body %}
-
