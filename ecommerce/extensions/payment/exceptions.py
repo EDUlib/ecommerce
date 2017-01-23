@@ -64,3 +64,9 @@ class SDNFallbackDataEmptyError(Exception):
     """ Error for when we call checkSDNFallback and the data is not yet populated.
     This data is populated by running: ./manage.py populate_sdn_fallback_data_and_metadata
     See ecommerce ADR 0007-sdn-fallback for more info """
+
+# Added by EDUlib
+class InvalidPaysafeDecision(GatewayError):
+    """The decision returned by Paysafe was not recognized."""
+    pass
+# Added by EDUlib
