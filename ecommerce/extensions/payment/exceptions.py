@@ -69,3 +69,9 @@ class RedundantPaymentNotificationError(PaymentError):
 class ExcessivePaymentForOrderError(PaymentError):
     """ Raised when duplicate payment notification is detected with different transaction ID. """
     pass
+
+# Added by EDUlib
+class InvalidPaysafeDecision(GatewayError):
+    """The decision returned by Paysafe was not recognized."""
+    pass
+# Added by EDUlib
