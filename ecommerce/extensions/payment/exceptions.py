@@ -44,3 +44,9 @@ class PCIViolation(PaymentError):
 class InvalidBasketError(PaymentError):
     """ Payment was made for an invalid basket. """
     pass
+
+# Added by EDUlib
+class InvalidPaysafeDecision(GatewayError):
+    """The decision returned by Paysafe was not recognized."""
+    pass
+# Added by EDUlib
