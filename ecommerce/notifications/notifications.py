@@ -31,7 +31,8 @@ def send_notification(user, commtype_code, context, site, recipient=None):
     context.update({
         'full_name': full_name,
         'site_domain': site.domain,
-        'platform_name': site.name,
+        #####'platform_name': site.name,
+        'platform_name': 'EDUlib',
         'tracking_pixel': tracking_pixel,
     })
 
