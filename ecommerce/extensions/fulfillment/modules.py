@@ -1008,3 +1008,14 @@ class CourseEntitlementFulfillmentModule(BaseFulfillmentModule):
             logger.exception('Failed to revoke fulfillment of Line [%d].', line.id)
 
         return False
+##### EDULIB code #####
+#                'lms_url': order.site.siteconfiguration.build_lms_url(),
+#                'receipt_page_url': order.site.siteconfiguration.build_lms_url('{}?orderNum={}'.format(settings.RECEIPT_PAGE_PATH, order.number)),
+#                'course_no_taxes': course_no_taxes,
+#                'tps': tps_taxes,
+#                'tvq': tvq_taxes,
+#            },
+#            site=order.site
+#        )
+#        logger.info("APRES send_notification")
+##### EDULIB code #####
