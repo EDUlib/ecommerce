@@ -206,6 +206,7 @@ class BasketCreateView(EdxOrderPlacementMixin, generics.CreateAPIView):
         if request.data.get('checkout') is True:
             # Begin the checkout process, if requested, with the requested payment processor.
             payment_processor_name = request.data.get('payment_processor_name')
+            logger.info('PROCESSOR NAME IS [%s]', payment_processor_name)
             if payment_processor_name:
                 try:
                     payment_processor = get_processor_class_by_name(payment_processor_name)
@@ -217,8 +218,12 @@ class BasketCreateView(EdxOrderPlacementMixin, generics.CreateAPIView):
             else:
                 payment_processor = get_default_processor_class()
 
+            logger.info('ON PASSE ICI')
+
             try:
+                #####response_data = self._checkout(basket, payment_processor(request.site), request)
                 response_data = self._checkout(basket, payment_processor(request.site), request)
+                logger.info('ON PASSE ICI AUSSI')
             except Exception as ex:  # pylint: disable=broad-except
                 basket.delete()
                 logger.exception('Failed to initiate checkout for Basket [%d]. The basket has been deleted.', basket_id)
@@ -274,6 +279,8 @@ class BasketCreateView(EdxOrderPlacementMixin, generics.CreateAPIView):
                 'payment_form_data': parameters,
                 'payment_page_url': payment_page_url,
             }
+            logger.info('PROCESSOR NAME IS [%s] again', payment_processor.NAME)
+            logger.info('PAYMENT PAGE IS [%s]', payment_page_url)
 
         return response_data
 
