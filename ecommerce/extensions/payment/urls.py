@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from django.conf.urls import include, url
 
-from ecommerce.extensions.payment.views import PaymentFailedView, SDNFailure, cybersource, paypal, stripe
+from ecommerce.extensions.payment.views import PaymentFailedView, SDNFailure, cybersource, paypal, stripe, paysafe
 
 CYBERSOURCE_APPLE_PAY_URLS = [
     url(r'^authorize/$', cybersource.CybersourceApplePayAuthorizationView.as_view(), name='authorize'),
@@ -30,6 +30,7 @@ STRIPE_URLS = [
 
 urlpatterns = [
     url(r'^cybersource/', include((CYBERSOURCE_URLS, 'cybersource'))),
+    url(r'^paysafe/notify/page.html$', paysafe.PaysafeNotifyView.as_view(), name='paysafe_notify'),
     url(r'^error/$', PaymentFailedView.as_view(), name='payment_error'),
     url(r'^paypal/', include((PAYPAL_URLS, 'paypal'))),
     url(r'^sdn/', include((SDN_URLS, 'sdn'))),
