@@ -1,6 +1,6 @@
 from django.conf.urls import include, url
 
-from ecommerce.extensions.payment.views import PaymentFailedView, SDNFailure, cybersource, paypal
+from ecommerce.extensions.payment.views import PaymentFailedView, SDNFailure, cybersource, paypal, paysafe
 
 CYBERSOURCE_URLS = [
     url(r'^redirect/$', cybersource.CybersourceInterstitialView.as_view(), name='redirect'),
@@ -18,6 +18,7 @@ SDN_URLS = [
 
 urlpatterns = [
     url(r'^cybersource/', include(CYBERSOURCE_URLS, namespace='cybersource')),
+    url(r'^paysafe/notify/page.html$', paysafe.PaysafeNotifyView.as_view(), name='paysafe_notify'),
     url(r'^error/$', PaymentFailedView.as_view(), name='payment_error'),
     url(r'^paypal/', include(PAYPAL_URLS, namespace='paypal')),
     url(r'^sdn/', include(SDN_URLS, namespace='sdn')),
