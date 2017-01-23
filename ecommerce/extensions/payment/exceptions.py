@@ -68,5 +68,4 @@ class SDNFallbackDataEmptyError(Exception):
 # Added by EDUlib
 class InvalidPaysafeDecision(GatewayError):
     """The decision returned by Paysafe was not recognized."""
-    pass
 # Added by EDUlib
