@@ -52,19 +52,47 @@ class EdxOrderPlacementMixin(OrderPlacementMixin):
         linked to the order when it is saved later on.
         """
         handled_processor_response = self.payment_processor.handle_processor_response(response, basket=basket)
+        #####print(handled_processor_response)
         source_type, __ = SourceType.objects.get_or_create(name=self.payment_processor.NAME)
-        total = handled_processor_response.total
-        reference = handled_processor_response.transaction_id
+        #####total = handled_processor_response.total
+        #####total = "50"
+        total = str(basket.total_incl_tax)
+        logger.info("Valeur du panier %s ", total)
+        #####reference = handled_processor_response.transaction_id
+        #####reference = "EDX-100037"
+        reference = basket.order_number
+        #####currency=handled_processor_response.currency,
+        #####monnaie = "CAD"
+        monnaie = basket.currency
+
+        ##### Les valeurs ne sont pas passees par handle_processor_response dirait-on 
+        ##### pourquoi
 
         source = Source(
             source_type=source_type,
-            currency=handled_processor_response.currency,
+            currency=monnaie,
             amount_allocated=total,
             amount_debited=total,
-            reference=reference,
-            label=handled_processor_response.card_number,
-            card_type=handled_processor_response.card_type
+            reference=reference
         )
+        #source = Source(
+        #    source_type=source_type,
+        #    currency=handled_processor_response.currency,
+        #    amount_allocated=total,
+        #    amount_debited=total,
+        #    reference=reference,
+        #    label=handled_processor_response.card_number,
+        #    card_type=handled_processor_response.card_type
+        #)
+        #source = Source(
+        #    source_type=source_type,
+        #    currency="CAD",
+        #    amount_allocated=total,
+        #    amount_debited=total,
+        #    reference=reference,
+        #    label="4530910000012345",
+        #    card_type="Visa"
+        #)
 
         event_type, __ = PaymentEventType.objects.get_or_create(name=PaymentEventTypeName.PAID)
         payment_event = PaymentEvent(event_type=event_type, amount=total, reference=reference,

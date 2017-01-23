@@ -18,6 +18,7 @@ SDN_URLS = [
 
 urlpatterns = [
     url(r'^cybersource/', include(CYBERSOURCE_URLS, namespace='cybersource')),
+    url(r'^paysafe/notify/page.html$', paysafe.PaysafeNotifyView.as_view(), name='paysafe_notify'),
     url(r'^error/$', PaymentFailedView.as_view(), name='payment_error'),
     url(r'^paypal/', include(PAYPAL_URLS, namespace='paypal')),
     url(r'^sdn/', include(SDN_URLS, namespace='sdn')),
