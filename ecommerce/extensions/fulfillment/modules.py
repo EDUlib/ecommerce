@@ -836,7 +836,7 @@ class EnrollmentCodeFulfillmentModule(BaseFulfillmentModule):
         product = order.lines.first().product
         course = Course.objects.get(id=product.attr.course_key)
 
-        logger.info("AVANT LE CALCUL DES TAXES")
+        #####logger.info("AVANT LE CALCUL DES TAXES")
         course_no_taxes = Decimal(order.total_incl_tax) / Decimal(1.14975)
         tps_taxes = Decimal(order.total_incl_tax) / Decimal(1.14975) * Decimal(0.05)
         tvq_taxes = Decimal(order.total_incl_tax) / Decimal(1.14975) * Decimal(0.09975)
@@ -866,7 +866,7 @@ class EnrollmentCodeFulfillmentModule(BaseFulfillmentModule):
         #    },
         #    site=order.site
         #)
-        logger.info("AVANT send_notification")
+        #####logger.info("AVANT send_notification")
         send_notification(
             order.user,
             'COURSE_PURCHASED',
