@@ -136,23 +136,13 @@
         }
         .cn-content-clear {
             padding: 0px 18px 18px;
-            border-top: 3px solid #B92167;
+            border-top: 3px solid #1d9fd9;
         }
         .cn-content-clear .cn-footer {
             border-top-width: 6px;
         }
         .cn-content p {
             padding: 5px 0;
-        }
-        .cn-content-msg {
-            color: #636C72;
-            line-height: 1.5rem;
-        }
-        .cn-content-msg a {
-            color: #005686 ;
-        }
-        .cn-footer-content {
-            color: #636C72;
         }
         .cn-footer-content p {
             padding: 5px 0;
@@ -190,7 +180,7 @@
                                 </tr>
                                 <tr>
                                     <td align="left" valign="top" style="font-size: 10px; color: #767676;">
-                                        3744, rue Jean-Brillant, Montréal (Québec) Canada H3C 3J7
+                                        141 Portland St, Cambridge, MA 02142
                                         <br><br>
                                     </td>
                                 </tr>
