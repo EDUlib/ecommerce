@@ -28,7 +28,7 @@ from ecommerce.extensions.payment.exceptions import (InvalidSignatureError, Inva
                                                      PartialAuthorizationError)
 from ecommerce.extensions.payment.helpers import sign
 from ecommerce.extensions.payment.processors import BasePaymentProcessor
-from ecommerce.extensions.payment.transport import RequestsTransport
+##########from ecommerce.extensions.payment.transport import RequestsTransport
 
 # Added by EDUlib
 from PythonNetBanxSDK.OptimalApiClient import OptimalApiClient
