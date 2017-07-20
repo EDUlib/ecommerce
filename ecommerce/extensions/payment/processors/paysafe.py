@@ -15,9 +15,9 @@ import pprint
 from django.conf import settings
 from oscar.apps.payment.exceptions import UserCancelled, GatewayError, TransactionDeclined
 from oscar.core.loading import get_model
-from suds.client import Client
-from suds.sudsobject import asdict
-from suds.wsse import Security, UsernameToken
+##########from suds.client import Client
+##########from suds.sudsobject import asdict
+##########from suds.wsse import Security, UsernameToken
 from threadlocals.threadlocals import get_current_request
 
 from ecommerce.core.url_utils import get_lms_url
