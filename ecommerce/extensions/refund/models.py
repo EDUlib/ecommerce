@@ -165,6 +165,7 @@ class Refund(StatusMixin, TimeStampedModel):
     def _issue_credit(self):
         """Issue a credit to the purchaser via the payment processor used for the original order."""
         try:
+            logger.info("Entering _issue_credit...........")
             # NOTE: Update this if we ever support multiple payment sources for a single order.
             source = self.order.sources.first()
             processor = get_processor_class_by_name(source.source_type.name)(self.order.site)
