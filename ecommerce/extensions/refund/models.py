@@ -162,12 +162,16 @@ class Refund(StatusMixin, TimeStampedModel):
     def _issue_credit(self):
         """Issue a credit to the purchaser via the payment processor used for the original order."""
         try:
+            logger.info("Entering _issue_credit...........")
             # NOTE: Update this if we ever support multiple payment sources for a single order.
             source = self.order.sources.first()
             processor = get_processor_class_by_name(source.source_type.name)(self.order.site)
             amount = self.total_credit_excl_tax
 
             refund_reference_number = processor.issue_credit(self.order, source.reference, amount, self.currency)
+            logger.info("processor %s", processor)
+            logger.info("amount %s", amount)
+            logger.info("refund_reference_number %s", refund_reference_number)
             source.refund(amount, reference=refund_reference_number)
             event_type, __ = PaymentEventType.objects.get_or_create(name=PaymentEventTypeName.REFUNDED)
             PaymentEvent.objects.create(
