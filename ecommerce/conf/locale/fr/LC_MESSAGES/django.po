@@ -67,7 +67,7 @@ msgstr ""
 "Project-Id-Version: edx-platform\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-07-31 15:54+0000\n"
-"PO-Revision-Date: 2017-08-07 04:26+0000\n"
+"PO-Revision-Date: 2017-08-10 18:55+0000\n"
 "Last-Translator: Pierre Mailhot <pierre.mailhot@gmail.com>\n"
 "Language-Team: French (Canada) (http://www.transifex.com/open-edx/edx-platform/language/fr_CA/)\n"
 "MIME-Version: 1.0\n"
@@ -216,7 +216,7 @@ msgstr "Activation de compte requise"
 msgid ""
 "Require users to activate their account before allowing them to redeem a "
 "coupon."
-msgstr ""
+msgstr "Exige des utilisateurs d'activer leur compte avant de leur permettre de racheter un coupon."
 
 #: ecommerce/core/models.py:153
 msgid "Optimizely snippet source URL"
@@ -224,7 +224,7 @@ msgstr ""
 
 #: ecommerce/core/models.py:154
 msgid "This script will be loaded on every page."
-msgstr ""
+msgstr "Ce script sera téléchargé sur chaque page."
 
 #: ecommerce/core/models.py:159 ecommerce/extensions/partner/models.py:14
 msgid "Enable Sailthru Reporting"
@@ -304,7 +304,7 @@ msgstr "Bienvenue sur EDUlib"
 msgid ""
 "Please choose from the courses selected by your organization to start "
 "learning."
-msgstr ""
+msgstr "Choisissez les cours sélectionnés par votre organisation pour commencer à apprendre."
 
 #: ecommerce/coupons/views.py:158
 msgid "Code not provided."
@@ -333,12 +333,12 @@ msgstr "Jeton de consentement de partage de données non valide fourni."
 #: ecommerce/coupons/views.py:235 ecommerce/extensions/basket/views.py:89
 #, python-brace-format
 msgid "You have already purchased {course} seat."
-msgstr ""
+msgstr "Vous avez déjà acheté une place pour {course}."
 
 #: ecommerce/coupons/views.py:247
 #, python-brace-format
 msgid "A discount has been applied, courtesy of {enterprise_customer_name}."
-msgstr ""
+msgstr "Une réduction a été appliquée, gracieuseté de {enterprise_customer_name}."
 
 #: ecommerce/courses/models.py:31 ecommerce/extensions/basket/models.py:15
 #: ecommerce/extensions/payment/models.py:58
@@ -489,7 +489,7 @@ msgstr "Aucun SKUs fourni."
 #: ecommerce/extensions/basket/views.py:114
 #, python-brace-format
 msgid "Products with SKU(s) [{skus}] do not exist."
-msgstr ""
+msgstr "Les produits avec les SKU(s) [{skus}] n'existent pas."
 
 #: ecommerce/extensions/basket/models.py:84
 #, python-brace-format
@@ -514,7 +514,7 @@ msgstr "Attribut texte"
 msgid ""
 "Due to export controls, we cannot allow you to access this course at this "
 "time."
-msgstr ""
+msgstr "En raison des contrôles à l'exportation, nous ne pouvons pas vous permettre d'accéder à ce cours en ce moment."
 
 #: ecommerce/extensions/basket/utils.py:110
 msgid "Click here to just purchase an enrollment for yourself"
@@ -540,7 +540,7 @@ msgstr "Product [{product}] non disponible à l'achat."
 
 #: ecommerce/extensions/basket/views.py:134
 msgid "You have already purchased these products"
-msgstr ""
+msgstr "Vous avez déjà acheté ces produits"
 
 #: ecommerce/extensions/basket/views.py:238
 msgid ""
@@ -566,7 +566,7 @@ msgstr "Vous recevrez un courriel à l'adresse {user_email} avec vos code(s) d'i
 #: ecommerce/extensions/basket/views.py:352
 #, python-brace-format
 msgid "Could not apply the code '{code}'; it requires data sharing consent."
-msgstr ""
+msgstr "Impossible d'appliquer le code '{code}'; Il requiert un accord de partage de données."
 
 #: ecommerce/extensions/basket/views.py:404
 #, python-brace-format
@@ -668,7 +668,7 @@ msgstr "Impossible de récupérer les données d'inscriptions."
 
 #: ecommerce/extensions/offer/models.py:183
 msgid "Course catalog id from the Discovery Service."
-msgstr ""
+msgstr "Identification du catalogue de cours à partir du service Discovery."
 
 #: ecommerce/extensions/offer/models.py:188
 msgid "UUID for an EnterpriseCustomer from the Enterprise Service."
@@ -832,7 +832,7 @@ msgid ""
 "An error occurred while processing your payment. You have not been charged. "
 "Please double-check the information you provided and try again. For help, "
 "{link_start}contact support{link_end}."
-msgstr ""
+msgstr "Une erreur est survenue pendant le traitement de votre paiement. Vous n'avez pas été facturé. SVP vérifier les informations fournises et essayez de nouveau. Pour de l'aide,  {link_start}contacter le support{link_end}."
 
 #: ecommerce/extensions/refund/models.py:68
 msgid "Order"
@@ -1006,7 +1006,7 @@ msgstr "Réclamés pour Cours ID"
 
 #: ecommerce/extensions/voucher/utils.py:236
 msgid "Redeemed For Course IDs"
-msgstr ""
+msgstr "Rachetées pour les ID de cours"
 
 #: ecommerce/extensions/voucher/utils.py:237
 msgid "Created By"
@@ -1074,12 +1074,12 @@ msgstr "Corrigé"
 #: ecommerce/programs/benefits.py:33
 #, python-brace-format
 msgid "{value}% program discount"
-msgstr ""
+msgstr "{Value}% de réduction de programme"
 
 #: ecommerce/programs/benefits.py:50
 #, python-brace-format
 msgid "{value} fixed-price program discount"
-msgstr ""
+msgstr "{Valeur} prix forfaitaire du programme"
 
 #: ecommerce/programs/constants.py:19
 msgid "Absolute"
@@ -1107,25 +1107,25 @@ msgstr "Une offre existe déjà pour ce programme."
 
 #: ecommerce/programs/forms.py:69
 msgid "Percentage discounts cannot be greater than 100%."
-msgstr ""
+msgstr "Les remises en pourcentage ne peuvent être supérieures à 100%."
 
 #: ecommerce/programs/forms.py:72
 msgid "A start date must be specified when specifying an end date."
-msgstr ""
+msgstr "Une date de début doit être spécifiée lors de la spécification d'une date de fin."
 
 #: ecommerce/programs/forms.py:75
 msgid "The start date must occur before the end date."
-msgstr ""
+msgstr "La date de début doit avoir lieu avant la date de fin."
 
 #: ecommerce/programs/forms.py:85
 #, python-brace-format
 msgid "Discount for the {program_title} {program_type} Program"
-msgstr ""
+msgstr "Réduction pour le programme {program_title} {programme_type}"
 
 #: ecommerce/programs/templates/programs/programoffer_form.html:8
 #, python-format
 msgid "Edit Program Offer: %(program_title)s"
-msgstr ""
+msgstr "Éditer l'offre de programme : %(program_title)s"
 
 #: ecommerce/programs/templates/programs/programoffer_form.html:12
 #: ecommerce/programs/templates/programs/programoffer_form.html:45
@@ -1139,7 +1139,7 @@ msgstr "Créer une offre de programme"
 #: ecommerce/programs/templates/programs/programoffer_list.html:17
 #: ecommerce/templates/edx/partials/_administration_menu.html:8
 msgid "Program Offers"
-msgstr ""
+msgstr "Offres de programmes"
 
 #: ecommerce/programs/templates/programs/programoffer_form.html:32
 #: ecommerce/templates/oscar/dashboard/catalogue/product_row_actions.html:11
@@ -1154,11 +1154,11 @@ msgstr "Créer"
 
 #: ecommerce/programs/templates/programs/programoffer_form.html:43
 msgid "Edit Program Offer"
-msgstr ""
+msgstr "Éditer l'offre de programme"
 
 #: ecommerce/programs/templates/programs/programoffer_form.html:56
 msgid "Save Changes"
-msgstr ""
+msgstr "Enregistrer les modifications"
 
 #: ecommerce/programs/templates/programs/programoffer_form.html:60
 #: ecommerce/templates/oscar/dashboard/catalogue/product_update.html:321
@@ -1170,7 +1170,7 @@ msgstr "Annuler"
 #: ecommerce/programs/templates/programs/programoffer_list.html:58
 #, python-format
 msgid "%(platform_name)s Program Offer Administration Tool"
-msgstr ""
+msgstr "Outil d'administration d'offre de programme %(platform_name)s"
 
 #: ecommerce/programs/templates/programs/programoffer_list.html:26
 msgid "Current program offers"
@@ -1339,11 +1339,11 @@ msgstr "Espagnol (Amérique Latine)"
 
 #: ecommerce/templates/admin/disable_change_list.html:5
 msgid "List view is temporarily disabled due to large number of records."
-msgstr ""
+msgstr "La vue en liste est temporairement désactivée en raison d'un grand nombre d'enregistrements."
 
 #: ecommerce/templates/base.html:10
 msgid "Build"
-msgstr ""
+msgstr "Développement"
 
 #: ecommerce/templates/base.html:71
 msgid "Version:"
@@ -1655,7 +1655,7 @@ msgstr "Se déconnecter"
 #: ecommerce/templates/edx/checkout/receipt.html:11
 #, python-format
 msgid "Receipt for %(order_number)s"
-msgstr ""
+msgstr "Reçu pour %(order_number)s"
 
 #: ecommerce/templates/edx/checkout/receipt.html:30
 msgid "Thank you for your order!"
@@ -1667,7 +1667,7 @@ msgid ""
 "Your order is complete. If you need a receipt, you can print this page. You "
 "will also receive a confirmation message with this information at "
 "%(link_start)s%(email)s%(link_end)s."
-msgstr ""
+msgstr "Votre commande est complète. Si vous avez besoin d'un reçu, vous pouvez imprimer cette page. Vous recevrez également un message de confirmation contenant ces informations au %(link_start)s%(email)s%(link_end)s."
 
 #: ecommerce/templates/edx/checkout/receipt.html:57
 msgid "Order Number:"
@@ -1714,7 +1714,7 @@ msgstr "Sous-total"
 #: ecommerce/templates/edx/checkout/receipt.html:109
 #, python-format
 msgid "%(voucher_discount_amount)s off"
-msgstr ""
+msgstr "%(voucher_discount_amount)s off"
 
 #: ecommerce/templates/edx/checkout/receipt.html:123
 #, python-format
@@ -1736,7 +1736,7 @@ msgid ""
 " organization that offers the credit. You can find a link to the "
 "organization’s website on your %(link_start)sdashboard%(link_end)s, next to "
 "the course name."
-msgstr ""
+msgstr "Pour recevoir un crédit académique pour ce cours, vous devez faire une demande de crédit auprès de l'organisation qui offre le crédit. Vous pouvez trouver un lien vers le site Web de l'organisation sur votre %(link_start)stableau de bord%(link_end)s près du nom du cours."
 
 #: ecommerce/templates/edx/checkout/receipt.html:164
 msgid "Go to Dashboard"
@@ -1874,24 +1874,24 @@ msgstr "\nVeuillez lire %(link_start)snotre FAQs pour voir les questions les plu
 
 #: ecommerce/templates/edx/email_confirmation_required.html:16
 msgid "You are enrolling in: "
-msgstr ""
+msgstr "Vous vous inscrivez à : "
 
 #: ecommerce/templates/edx/email_confirmation_required.html:23
 #, python-format
 msgid ""
 "An email has been sent to %(user_email)s with a link for you to activate "
 "your account."
-msgstr ""
+msgstr "Un courriel a été envoyé à %(user_email)s avec un lien vous permettant d'activer votre compte."
 
 #: ecommerce/templates/edx/email_confirmation_required.html:25
 msgid "Why activate?"
-msgstr ""
+msgstr "Pourquoi activer?"
 
 #: ecommerce/templates/edx/email_confirmation_required.html:27
 msgid ""
 "We ask you to activate your account to ensure it is really you creating the "
 "account and to prevent fraud."
-msgstr ""
+msgstr "Nous vous demandons d'activer votre compte pour nous assurer que c'est bien vous qui créer le compte et afin de prévenir la fraude."
 
 #: ecommerce/templates/edx/error.html:16
 msgid "If you need assistance, contact edX support."
@@ -1941,7 +1941,7 @@ msgid ""
 "                                If you attempted to make a purchase, you have not been charged. Return to your %(dashboard_link_start)sdashboard%(link_end)s to try\n"
 "                                again, or %(support_link_start)scontact %(platform_name)s Support%(link_end)s.\n"
 "                            "
-msgstr ""
+msgstr "\nSi vous avez tenté de faire un achat, vous n'avez pas été facturé. Retournez à votre %(dashboard_link_start)stableau de bord%(link_end)s pour essayer\nde nouveau, ou %(support_link_start)scontacter le %(platform_name)s support%(link_end)s."
 
 #: ecommerce/templates/oscar/basket/partials/add_voucher_form.html:11
 msgid "Applying..."
@@ -2150,7 +2150,7 @@ msgid ""
 "To receive a verified certificate, you have to verify your identity using "
 "your <strong>webcam</strong> and an <strong>official government-issued photo"
 " identification</strong> before the verification deadline."
-msgstr ""
+msgstr "Afin d'obtenir une attestation, vous devez valider votre identité avec <strong>une caméra</strong> et <strong>une photo provenant d'une pièce d'identité</strong> avant la date limite de vérification pour ce cours."
 
 #: ecommerce/templates/oscar/checkout/_verification_data.html:21
 msgid "Verify Now"
@@ -2194,7 +2194,7 @@ msgid ""
 "                    Please try to submit your payment again. If this problem persists, contact %(start_link)s\n"
 "                    %(payment_support_email)s%(end_link)s.\n"
 "                    "
-msgstr ""
+msgstr "\nS'il vous plaît essayer de soumettre à nouveau votre paiement. Si ce problème persiste, contactez %(start_link)s\n%(payment_support_email)s%(end_link)s."
 
 #: ecommerce/templates/oscar/checkout/payment_error.html:6
 #: ecommerce/templates/oscar/checkout/payment_error.html:15
@@ -2205,19 +2205,19 @@ msgstr "Paiement échoué"
 msgid ""
 "An error occurred while processing your payment. <strong>You have not been "
 "charged.</strong>"
-msgstr ""
+msgstr "Une erreur est survenue avec votre paiement. <strong>Vous n'avez pas été facturé.</strong>"
 
 #: ecommerce/templates/oscar/checkout/payment_error.html:23
 #, python-format
 msgid ""
 "Please wait a few minutes and then try again. For help, contact "
 "%(start_link)s%(payment_support_email)s%(end_link)s."
-msgstr ""
+msgstr "S'il vous plaît attendre quelques minutes et essayer de nouveau. Pour de l'aide, contacter %(start_link)s%(payment_support_email)s%(end_link)s."
 
 #: ecommerce/templates/oscar/checkout/payment_error.html:31
 #, python-format
 msgid "To try again, return to your %(start_link)sdashboard%(end_link)s."
-msgstr ""
+msgstr "Pour essayer de nouveau, retourner à votre %(start_link)stableau de bord%(end_link)s."
 
 #. Translators: SDN is an acronym for Specially Designated Nationals
 #: ecommerce/templates/oscar/checkout/sdn_failure.html:7
