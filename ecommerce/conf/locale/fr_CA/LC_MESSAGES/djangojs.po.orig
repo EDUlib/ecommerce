@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: edx-platform\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-18 11:14-0400\n"
-"PO-Revision-Date: 2017-08-10 19:38+0000\n"
-"Last-Translator: Pierre Mailhot <pierre.mailhot@gmail.com>\n"
+"POT-Creation-Date: 2017-06-30 17:21+0000\n"
+"PO-Revision-Date: 2017-06-30 21:22+0000\n"
+"Last-Translator: Ned Batchelder <ned@edx.org>\n"
 "Language-Team: French (Canada) (http://www.transifex.com/open-edx/edx-platform/language/fr_CA/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -57,47 +57,47 @@ msgstr "Le nombre d'utilisation maximale pour un coupon multi-usage doit être s
 
 #: ecommerce/static/js/models/coupon_model.js:166
 msgid "A valid Program UUID is required."
-msgstr "Un UUID de Programme valide est requis."
+msgstr ""
 
 #: ecommerce/static/js/models/coupon_model.js:190
 msgid "Must occur before end date"
 msgstr "Doit se produire avant la date de fin"
 
-#: ecommerce/static/js/models/course_model.js:54
+#: ecommerce/static/js/models/course_model.js:56
 msgid "You must select a course type."
 msgstr "Vous devez sélectionner un type de cours."
 
-#: ecommerce/static/js/models/course_model.js:60
+#: ecommerce/static/js/models/course_model.js:62
 msgid "You must choose if an honor seat should be created."
 msgstr "Vous devez choisir si une place sur l'honneur doit être créée."
 
-#: ecommerce/static/js/models/course_model.js:77
+#: ecommerce/static/js/models/course_model.js:79
 msgid "The verification deadline must occur AFTER the upgrade deadline."
 msgstr "La date limite de vérification doit être APRÈS la date limite de mise à niveau."
 
-#: ecommerce/static/js/models/course_model.js:86
+#: ecommerce/static/js/models/course_model.js:88
 msgid "Product validation failed."
 msgstr "La validation du produit a échoué."
 
-#: ecommerce/static/js/models/course_model.js:94
+#: ecommerce/static/js/models/course_model.js:96
 #: ecommerce/static/js/views/dynamic_catalog_view.js:70
 msgid "Course ID"
 msgstr "ID de cours"
 
-#: ecommerce/static/js/models/course_model.js:95
+#: ecommerce/static/js/models/course_model.js:97
 msgid "Course Name"
 msgstr "Nom du cours"
 
-#: ecommerce/static/js/models/course_model.js:96
+#: ecommerce/static/js/models/course_model.js:98
 #: ecommerce/static/js/views/course_list_view.js:72
 msgid "Course Type"
 msgstr "Type de cours"
 
-#: ecommerce/static/js/models/course_model.js:97
+#: ecommerce/static/js/models/course_model.js:99
 msgid "Verification Deadline"
 msgstr "Date limite de vérification"
 
-#: ecommerce/static/js/models/course_model.js:98
+#: ecommerce/static/js/models/course_model.js:100
 msgid "Include Honor Seat"
 msgstr "Inclure une place sur l'honneur"
 
@@ -107,19 +107,19 @@ msgstr "Toutes les places de cours doivent avoir un prix."
 
 #: ecommerce/static/js/models/course_seats/course_seat.js:45
 msgid "Verified seats must have an upgrade deadline."
-msgstr "Les places de cours vérifiées doivent avoir une date limite de mise à niveau."
+msgstr ""
 
 #: ecommerce/static/js/models/course_seats/course_seat.js:53
 msgid "The upgrade deadline must occur BEFORE the verification deadline."
 msgstr "La date limite de mise à niveau doit se produire avant la date limite de vérification."
 
 #: ecommerce/static/js/models/course_seats/course_seat.js:84
-#: ecommerce/static/js/views/course_form_view.js:60
+#: ecommerce/static/js/views/course_form_view.js:63
 msgid "Verified"
 msgstr "Vérifié"
 
 #: ecommerce/static/js/models/course_seats/course_seat.js:86
-#: ecommerce/static/js/views/course_form_view.js:71
+#: ecommerce/static/js/views/course_form_view.js:74
 msgid "Credit"
 msgstr "Crédit"
 
@@ -243,52 +243,40 @@ msgstr "Échanger"
 msgid ""
 "Caution! Using the back button on this page may cause you to be charged "
 "again."
-msgstr "Attention! L'utilisation du bouton de retour sur cette page peut vous faire payer une autre fois."
-
-#. Translators: Do not translate "Apple Pay".
-#: ecommerce/static/js/payment_processors/cybersource.js:211
-msgid ""
-"Apple Pay is not available at this time. Please try another payment method."
-msgstr "Apple Pay n'est pas disponible pour le moment. SVP essayer une autre méthode de paiement."
-
-#: ecommerce/static/js/payment_processors/cybersource.js:242
-msgid ""
-"An error occurred while processing your payment. You have NOT been charged. "
-"Please try again, or select another payment method."
-msgstr "Une erreur est survenue pendant le traitement de votre paiement. Vous n'avez pas été facturé. SVP essayer de nouveau, ou choisissez une autre méthode de paiement."
+msgstr ""
 
 #: ecommerce/static/js/utils/utils.js:184
 msgid "Trailing comma not allowed."
 msgstr "La virgule traînante n'est pas autorisée."
 
 #: ecommerce/static/js/views/coupon_detail_view.js:107
-#: ecommerce/static/js/views/coupon_form_view.js:60
+#: ecommerce/static/js/views/coupon_form_view.js:61
 msgid "Can be used once by one customer"
 msgstr "Peut être utilisé une seule fois par un client"
 
 #: ecommerce/static/js/views/coupon_detail_view.js:109
-#: ecommerce/static/js/views/coupon_form_view.js:68
+#: ecommerce/static/js/views/coupon_form_view.js:69
 msgid "Can be used multiple times by multiple customers"
 msgstr "Peut être utilisé à plusieurs reprises par de multiples clients"
 
 #: ecommerce/static/js/views/coupon_detail_view.js:111
-#: ecommerce/static/js/views/coupon_form_view.js:64
+#: ecommerce/static/js/views/coupon_form_view.js:65
 msgid "Can be used once by multiple customers"
 msgstr "Peut être utilisé une fois par plusieurs clients"
 
-#: ecommerce/static/js/views/coupon_form_view.js:49
+#: ecommerce/static/js/views/coupon_form_view.js:50
 msgid "Enrollment Code"
 msgstr "Code d'inscription"
 
-#: ecommerce/static/js/views/coupon_form_view.js:53
+#: ecommerce/static/js/views/coupon_form_view.js:54
 msgid "Discount Code"
 msgstr "Code de réduction"
 
-#: ecommerce/static/js/views/coupon_form_view.js:768
+#: ecommerce/static/js/views/coupon_form_view.js:769
 msgid "Save Changes"
 msgstr "Enregistrer les modifications"
 
-#: ecommerce/static/js/views/coupon_form_view.js:783
+#: ecommerce/static/js/views/coupon_form_view.js:784
 msgid "Create Coupon"
 msgstr "Créer un coupon"
 
@@ -329,7 +317,7 @@ msgstr "Nom"
 
 #: ecommerce/static/js/views/coupon_list_view.js:81
 msgid "Created"
-msgstr "Créé"
+msgstr ""
 
 #: ecommerce/static/js/views/coupon_list_view.js:85
 msgid "Custom Code"
@@ -347,34 +335,34 @@ msgstr "Catégorie"
 msgid "Coupon Report"
 msgstr "Rapport sur les coupons"
 
-#: ecommerce/static/js/views/course_form_view.js:55
+#: ecommerce/static/js/views/course_form_view.js:58
 msgid "Free (Audit)"
 msgstr "Gratuit (Auditeur)"
 
-#: ecommerce/static/js/views/course_form_view.js:56
+#: ecommerce/static/js/views/course_form_view.js:59
 msgid "Free audit track. No certificate."
 msgstr "Parcours auditeur libre. Aucune attestation."
 
-#: ecommerce/static/js/views/course_form_view.js:61
+#: ecommerce/static/js/views/course_form_view.js:64
 msgid ""
 "Paid certificate track with initial verification and Verified Certificate"
 msgstr "Payé parcours d'attestation avec la vérification initiale et attestation vérifiée"
 
-#: ecommerce/static/js/views/course_form_view.js:65
+#: ecommerce/static/js/views/course_form_view.js:68
 msgid "Professional Education"
 msgstr "Formation professionnelle"
 
-#: ecommerce/static/js/views/course_form_view.js:66
+#: ecommerce/static/js/views/course_form_view.js:69
 msgid ""
 "Paid certificate track with initial verification and Professional Education "
 "Certificate"
-msgstr "Parcours d'attestation payant avec vérification initiale et une attestation de formation continue professionnelle"
+msgstr ""
 
-#: ecommerce/static/js/views/course_form_view.js:72
+#: ecommerce/static/js/views/course_form_view.js:75
 msgid ""
 "Paid certificate track with initial verification and Verified Certificate, "
 "and option to purchase credit"
-msgstr "Parcours d'attestation payant avec vérification initiale et une attestation vérifiée, et option d'acheter des crédits de cours"
+msgstr ""
 
 #. Translators: _START_, _END_, and _TOTAL_ are placeholders. Do NOT translate
 #. them.
