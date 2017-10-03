@@ -7,13 +7,14 @@
 
 {% blocktrans %}You can access your course and complete your verification (if required) on your {{platform_name}} dashboard. {% endblocktrans %}
 
-{% trans "https://test-cours.edulib.org/dashboard" %}
+{% trans "https://cours.edulib.org/dashboard" %}
 
 {% blocktrans %}To explore other great courses, visit the {{platform_name}} website. More courses are added every day!{% endblocktrans %}
 
 {% trans "To view your payment information, visit the following website." %}
 {{receipt_page_url}}
 {% trans "http://ec2-52-60-96-25.ca-central-1.compute.amazonaws.com/" %}
+{% trans "https://cours.edulib.org/" %}
 
 {% trans "Thank you. We hope you enjoy the course!" %}
 
