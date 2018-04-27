@@ -171,14 +171,7 @@ class Refund(StatusMixin, TimeStampedModel):
             processor = get_processor_class_by_name(source.source_type.name)(self.order.site)
             amount = self.total_credit_excl_tax
 
-            refund_reference_number = processor.issue_credit(self.order.number, self.order.basket, source.reference,
-                                                             amount, self.currency)
-##### EDUlib code #####
-#            refund_reference_number = processor.issue_credit(self.order, source.reference, amount, self.currency)
-#            logger.info("processor %s", processor)
-#            logger.info("amount %s", amount)
-#            logger.info("refund_reference_number %s", refund_reference_number)
-##### EDUlib code #####
+            refund_reference_number = processor.issue_credit(self.order.number, self.order.basket, source.reference, amount, self.currency)
             source.refund(amount, reference=refund_reference_number)
             event_type, __ = PaymentEventType.objects.get_or_create(name=PaymentEventTypeName.REFUNDED)
             PaymentEvent.objects.create(
