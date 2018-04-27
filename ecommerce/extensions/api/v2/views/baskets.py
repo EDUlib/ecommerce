@@ -202,7 +202,7 @@ class BasketCreateView(EdxOrderPlacementMixin, generics.CreateAPIView):
         if request.data.get('checkout') is True:
             # Begin the checkout process, if requested, with the requested payment processor.
             payment_processor_name = request.data.get('payment_processor_name')
-            #####logger.info('PROCESSOR NAME IS [%s]', payment_processor_name)
+            logger.info('PROCESSOR NAME IS [%s]', payment_processor_name)
             if payment_processor_name:
                 try:
                     payment_processor = get_processor_class_by_name(payment_processor_name)
@@ -214,12 +214,8 @@ class BasketCreateView(EdxOrderPlacementMixin, generics.CreateAPIView):
             else:
                 payment_processor = get_default_processor_class()
 
-            #####logger.info('ON PASSE ICI')
-
             try:
-                #####response_data = self._checkout(basket, payment_processor(request.site), request)
                 response_data = self._checkout(basket, payment_processor(request.site), request)
-                #####logger.info('ON PASSE ICI AUSSI')
             except Exception as ex:  # pylint: disable=broad-except
                 basket.delete()
                 logger.exception('Failed to initiate checkout for Basket [%d]. The basket has been deleted.', basket_id)
@@ -275,8 +271,6 @@ class BasketCreateView(EdxOrderPlacementMixin, generics.CreateAPIView):
                 'payment_form_data': parameters,
                 'payment_page_url': payment_page_url,
             }
-            #####logger.info('PROCESSOR NAME IS [%s] again', payment_processor.NAME)
-            #####logger.info('PAYMENT PAGE IS [%s]', payment_page_url)
 
         return response_data
 
@@ -413,6 +407,7 @@ class BasketCalculateView(generics.GenericAPIView):
         skus = request.GET.getlist('sku')
         if not skus:
             return HttpResponseBadRequest(_('No SKUs provided.'))
+        skus.sort()
 
         code = request.GET.get('code', None)
         try:
@@ -428,31 +423,52 @@ class BasketCalculateView(generics.GenericAPIView):
         if not voucher and len(products) == 1:
             voucher = get_entitlement_voucher(request, products[0])
 
-        username = request.GET.get('username', default='')
-        user = request.user
+        basket_owner = request.user
+        requested_username = request.GET.get('username', default='')
+        is_anonymous = request.GET.get('is_anonymous') == 'true'
+        use_default_basket = is_anonymous
 
-        is_anonymous = False
+        # validate query parameters
+        if requested_username and is_anonymous:
+            return HttpResponseBadRequest(_('Provide username or is_anonymous query param, but not both'))
+        elif not requested_username and not is_anonymous:
+            if waffle.switch_is_active("debug_logging_predates_is_anonymous"):  # pragma: no cover
+                logger.warning(
+                    ('Request to Basket Calculate must supply either username or '
+                     'is_anonymous query param. Requesting user=[%s]'),
+                    basket_owner.username
+                )
 
         # If a username is passed in, validate that the user has staff access or is the same user.
-        if username:
-            if user.is_staff or (user.username.lower() == username.lower()):
+        if requested_username:
+            if basket_owner.username.lower() == requested_username.lower():
+                pass
+            elif basket_owner.is_staff:
                 try:
-                    user = User.objects.get(username=username)
+                    basket_owner = User.objects.get(username=requested_username)
                 except User.DoesNotExist:
-                    logger.debug('Request username: [%s] does not exist', username)
+                    # This case represents a user who is logged in to marketing, but
+                    # doesn't yet have an account in ecommerce. These users have
+                    # never purchased before.
+                    use_default_basket = True
+                    if waffle.switch_is_active("debug_logging_predates_is_anonymous"):  # pragma: no cover
+                        logger.warning('Request username: [%s] does not exist', requested_username)
             else:
                 return HttpResponseForbidden('Unauthorized user credentials')
-        elif user.username == self.MARKETING_USER:
-            # A request made by the marketing user without a username query param,
-            # means this is calculating the non-logged in (anonymous) price.
-            # TODO: LEARNER-4993: Switch to a query param rather than hardcoding to
-            # the marketing user.
+
+        if basket_owner.username == self.MARKETING_USER and not use_default_basket:
+            # For legacy requests that predate is_anonymous parameter, we will calculate
+            # an anonymous basket if the calculated user is the marketing user.
+            # TODO: LEARNER-5057: Remove this special case for the marketing user
+            # once logs show no more requests with no parameters (see above).
+            use_default_basket = True
+
+        if use_default_basket:
             if waffle.flag_is_active(request, "use_basket_calculate_none_user"):
-                user = None
-            is_anonymous = True
+                basket_owner = None
 
         cache_key = None
-        if is_anonymous:
+        if use_default_basket:
             # For an anonymous user we can directly get the cached price, because
             # there can't be any enrollments or entitlements.
             cache_key = get_cache_key(
@@ -465,9 +481,9 @@ class BasketCalculateView(generics.GenericAPIView):
                 if basket_calculate_results:
                     return Response(basket_calculate_results)
 
-        response = self._calculate_temporary_basket(user, request, products, voucher, skus, code)
+        response = self._calculate_temporary_basket(basket_owner, request, products, voucher, skus, code)
 
-        if response and is_anonymous:
+        if response and use_default_basket:
             cache.set(cache_key, response, settings.ANONYMOUS_BASKET_CALCULATE_CACHE_TIMEOUT)
 
         return Response(response)
