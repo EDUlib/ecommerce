@@ -114,7 +114,7 @@ class EdxOrderPlacementMixin(six.with_metaclass(abc.ABCMeta, OrderPlacementMixin
         properties = {
             'checkout_id': basket.order_number,
             'step': 1,
-            'payment_method': '{} | {}'.format(handled_processor_response.card_type, payment_processor.NAME)
+            'payment_method': '{}'.format(payment_processor.NAME)
         }
         track_segment_event(basket.site, basket.owner, 'Checkout Step Completed', properties)
 
