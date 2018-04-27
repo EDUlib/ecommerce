@@ -29,10 +29,11 @@ RefundLine = get_model('refund', 'RefundLine')
 
 class OrderNumberGenerator(object):
     # Modified by EDUlib
-    #OFFSET = 100000
+    #OFFSET = 100000 # production environment
+    OFFSET = 300000 # test environment
     #OFFSET = 500000
     #OFFSET = 600000
-    OFFSET = 700000
+    #OFFSET = 700000
     # Modified by EDUlib
 
     def order_number(self, basket):
