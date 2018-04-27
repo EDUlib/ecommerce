@@ -141,26 +141,6 @@ class EdxOrderPlacementMixin(six.with_metaclass(abc.ABCMeta, OrderPlacementMixin
             amount_debited=total,
             reference=reference
         )
-##### EDULIB code #####
-        #source = Source(
-        #    source_type=source_type,
-        #    currency=handled_processor_response.currency,
-        #    amount_allocated=total,
-        #    amount_debited=total,
-        #    reference=reference,
-        #    label=handled_processor_response.card_number,
-        #    card_type=handled_processor_response.card_type
-        #)
-        #source = Source(
-        #    source_type=source_type,
-        #    currency="CAD",
-        #    amount_allocated=total,
-        #    amount_debited=total,
-        #    reference=reference,
-        #    label="4530910000012345",
-        #    card_type="Visa"
-        #)
-##### EDULIB code #####
 
         event_type, __ = PaymentEventType.objects.get_or_create(name=PaymentEventTypeName.PAID)
         payment_event = PaymentEvent(event_type=event_type, amount=total, reference=reference, processor_name=self.payment_processor.NAME)
