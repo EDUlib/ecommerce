@@ -5,6 +5,7 @@
 {% load l10n %}
 {% load offer_tags %}
 {% load static %}
+{% load enterprise %}
 
 {% block title %}
   {% blocktrans trimmed with order_number=order.number %}
