@@ -5,6 +5,7 @@
 {% load l10n %}
 {% load offer_tags %}
 {% load static %}
+{% load enterprise %}
 
 {% block title %}
   {% blocktrans trimmed with order_number=order.number %}
@@ -120,17 +121,7 @@
                         </span>
                       {% endwith %}
                     {% else %}
-                        <span class="discount">
-                            {% if offer.condition.enterprise_customer_name %}
-                                {% blocktrans trimmed with type=discount.offer.offer_type enterprise_name=discount.offer.condition.enterprise_customer_name %}
-                                    Discount of type {{ type }} provided by {{ enterprise_name }}
-                                {% endblocktrans %}
-                            {% else %}
-                                {% blocktrans trimmed with type=discount.offer.offer_type %}
-                                    Discount of type {{ type }} is provided.
-                                {% endblocktrans %}
-                            {% endif %}
-                        </span>
+                      <span class="discount">{{ discount.offer_name }}</span>
                     {% endif %}
 
                   </div>
