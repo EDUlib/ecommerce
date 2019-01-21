@@ -150,7 +150,6 @@ class EdxOrderPlacementMixin(OrderPlacementMixin, metaclass=abc.ABCMeta):
             amount_debited=total,
             reference=reference
         )
-
         event_type, __ = PaymentEventType.objects.get_or_create(name=PaymentEventTypeName.PAID)
         payment_event = PaymentEvent(event_type=event_type, amount=total, reference=reference, processor_name=self.payment_processor.NAME)
         self.add_payment_source(source)
