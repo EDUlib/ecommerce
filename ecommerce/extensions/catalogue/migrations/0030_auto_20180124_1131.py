@@ -23,4 +23,18 @@ class Migration(migrations.Migration):
             name='value_multi_option',
             field=models.ManyToManyField(blank=True, related_name='multi_valued_attribute_values', to='catalogue.AttributeOption', verbose_name='Value multi option'),
         ),
+        migrations.AlterField(
+            model_name='productattribute',
+            name='option_group',
+            field=models.ForeignKey(blank=True, help_text='Select an option group if using type "Option" or "Multi Option"', null=True, on_delete=django.db.models.deletion.CASCADE, to='catalogue.AttributeOptionGroup', verbose_name='Option Group'),
+        ),
+        migrations.AlterField(
+            model_name='productattribute',
+            name='type',
+            field=models.CharField(choices=[(b'text', 'Text'), (b'integer', 'Integer'), (b'boolean', 'True / False'), (b'float', 'Float'), (b'richtext', 'Rich Text'), (b'date', 'Date'), (b'datetime', b'Datetime'), (b'option', 'Option'), (b'multi_option', 'Multi Option'), (b'entity', 'Entity'), (b'file', 'File'), (b'image', 'Image')], default=b'text', max_length=20, verbose_name='Type'),
+        ),
+        migrations.AlterUniqueTogether(
+            name='productimage',
+            unique_together=set([]),
+        ),
     ]
