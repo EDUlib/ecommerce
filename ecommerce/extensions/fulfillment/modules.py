@@ -852,7 +852,6 @@ class EnrollmentCodeFulfillmentModule(BaseFulfillmentModule):
         product = order.lines.first().product
         course = Course.objects.get(id=product.attr.course_key)
 
-        #####logger.info("AVANT LE CALCUL DES TAXES")
         course_no_taxes = Decimal(order.total_incl_tax) / Decimal(1.14975)
         tps_taxes = Decimal(order.total_incl_tax) / Decimal(1.14975) * Decimal(0.05)
         tvq_taxes = Decimal(order.total_incl_tax) / Decimal(1.14975) * Decimal(0.09975)
@@ -882,7 +881,6 @@ class EnrollmentCodeFulfillmentModule(BaseFulfillmentModule):
         #    },
         #    site=order.site
         #)
-        #####logger.info("AVANT send_notification")
         send_notification(
             order.user,
             'COURSE_PURCHASED',
@@ -1026,14 +1024,3 @@ class CourseEntitlementFulfillmentModule(BaseFulfillmentModule):
             logger.exception('Failed to revoke fulfillment of Line [%d].', line.id)
 
         return False
-##### EDULIB code #####
-#                'lms_url': order.site.siteconfiguration.build_lms_url(),
-#                'receipt_page_url': order.site.siteconfiguration.build_lms_url('{}?orderNum={}'.format(settings.RECEIPT_PAGE_PATH, order.number)),
-#                'course_no_taxes': course_no_taxes,
-#                'tps': tps_taxes,
-#                'tvq': tvq_taxes,
-#            },
-#            site=order.site
-#        )
-#        logger.info("APRES send_notification")
-##### EDULIB code #####
