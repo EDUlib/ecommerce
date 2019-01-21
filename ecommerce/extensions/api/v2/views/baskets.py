@@ -206,7 +206,6 @@ class BasketCreateView(EdxOrderPlacementMixin, generics.CreateAPIView):
         if request.data.get('checkout') is True:
             # Begin the checkout process, if requested, with the requested payment processor.
             payment_processor_name = request.data.get('payment_processor_name')
-            logger.info('PROCESSOR NAME IS [%s]', payment_processor_name)
             if payment_processor_name:
                 try:
                     payment_processor = get_processor_class_by_name(payment_processor_name)
@@ -462,8 +461,6 @@ class BasketCalculateView(generics.GenericAPIView):
         requested_username = request.GET.get('username', default='')
         is_anonymous = request.GET.get('is_anonymous', 'false').lower() == 'true'
 
-        #####requested_username = request.GET.get('username', default='')
-        #####is_anonymous = request.GET.get('is_anonymous') == 'true'
         use_default_basket = is_anonymous
 
         # validate query parameters
@@ -474,12 +471,6 @@ class BasketCalculateView(generics.GenericAPIView):
                            " param. Requesting user=%s. Future versions of this API will treat this "
                            "WARNING as an ERROR and raise an exception.", basket_owner.username)
             requested_username = request.user.username
-        #####    if waffle.switch_is_active("debug_logging_predates_is_anonymous"):  # pragma: no cover
-        #####        logger.warning(
-        #####            ('Request to Basket Calculate must supply either username or '
-        #####             'is_anonymous query param. Requesting user=[%s]'),
-        #####            basket_owner.username
-        #####        )
 
         # If a username is passed in, validate that the user has staff access or is the same user.
         if requested_username:
@@ -493,8 +484,6 @@ class BasketCalculateView(generics.GenericAPIView):
                     # doesn't yet have an account in ecommerce. These users have
                     # never purchased before.
                     use_default_basket = True
-        #####            if waffle.switch_is_active("debug_logging_predates_is_anonymous"):  # pragma: no cover
-        #####                logger.warning('Request username: [%s] does not exist', requested_username)
             else:
                 return HttpResponseForbidden('Unauthorized user credentials')
 
@@ -507,8 +496,6 @@ class BasketCalculateView(generics.GenericAPIView):
 
         if use_default_basket:
             basket_owner = None
-        #####    if waffle.flag_is_active(request, "use_basket_calculate_none_user"):
-        #####        basket_owner = None
 
         # If we have a basket owner, ensure they have an LMS user id
         try:
@@ -540,9 +527,5 @@ class BasketCalculateView(generics.GenericAPIView):
         response = self._calculate_temporary_basket_atomic(basket_owner, request, products, voucher, skus, code)
         if response and use_default_basket:
             TieredCache.set_all_tiers(cache_key, response, settings.ANONYMOUS_BASKET_CALCULATE_CACHE_TIMEOUT)
-        #####response = self._calculate_temporary_basket(basket_owner, request, products, voucher, skus, code)
-        #####
-        #####if response and use_default_basket:
-        #####    cache.set(cache_key, response, settings.ANONYMOUS_BASKET_CALCULATE_CACHE_TIMEOUT)
 
         return Response(response)
