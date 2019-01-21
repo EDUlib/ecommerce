@@ -72,7 +72,12 @@ class EdxOrderPlacementMixin(OrderPlacementMixin):
         properties = {
             'checkout_id': basket.order_number,
             'step': 1,
+            ##### code OpenedX #####
+            #####'payment_method': '{} | {}'.format(handled_processor_response.card_type, payment_processor.NAME)
+            ##### code OpenedX #####
+            ##### code EDUlib #####
             'payment_method': '{}'.format(payment_processor.NAME)
+            ##### code EDUlib #####
         }
         track_segment_event(basket.site, basket.owner, 'Checkout Step Completed', properties)
 
@@ -84,17 +89,6 @@ class EdxOrderPlacementMixin(OrderPlacementMixin):
         self.emit_checkout_step_events(basket, handled_processor_response, self.payment_processor)
         track_segment_event(basket.site, basket.owner, 'Payment Info Entered', {'checkout_id': basket.order_number})
         source_type, __ = SourceType.objects.get_or_create(name=self.payment_processor.NAME)
-        #####total = handled_processor_response.total
-        #####reference = handled_processor_response.transaction_id
-        #####source = Source(
-        #####    source_type=source_type,
-        #####    currency=handled_processor_response.currency,
-        #####    amount_allocated=total,
-        #####    amount_debited=total,
-        #####    reference=reference,
-        #####    label=handled_processor_response.card_number,
-        #####    card_type=handled_processor_response.card_type
-        #####)
         total = str(basket.total_incl_tax)
         reference = basket.order_number
         monnaie = basket.currency
@@ -105,7 +99,6 @@ class EdxOrderPlacementMixin(OrderPlacementMixin):
             amount_debited=total,
             reference=reference
         )
-
         event_type, __ = PaymentEventType.objects.get_or_create(name=PaymentEventTypeName.PAID)
         payment_event = PaymentEvent(event_type=event_type, amount=total, reference=reference, processor_name=self.payment_processor.NAME)
         self.add_payment_source(source)
