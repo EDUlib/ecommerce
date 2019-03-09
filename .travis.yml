@@ -4,6 +4,7 @@ dist: focal
 branches:
   only:
     - master
+    - open-release/ironwood.master
 
 sudo: required
 services:
