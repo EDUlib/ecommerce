@@ -4,7 +4,7 @@ dist: latest
 branches:
   only:
     - master
-    - open-release/juniper.rc1
+    - open-release/juniper.rc2
 
 sudo: required
 services:
