@@ -21,7 +21,7 @@ djangorestframework-csv
 djangorestframework-datatables
 djangorestframework-jwt
 drf-extensions==0.3.1
-edx-auth-backends
+edx-auth-backends==1.2.1            # Requires code changes when upgraded to 1.2.2
 edx-django-release-util
 edx-django-utils
 edx-drf-extensions
