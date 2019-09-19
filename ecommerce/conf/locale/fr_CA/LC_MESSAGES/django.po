@@ -3975,3 +3975,7 @@ msgstr "Ce client n'a pas encore écrit de commentaires."
 #: ecommerce/urls.py:43
 msgid "E-Commerce Service Administration"
 msgstr "Administration du Service E-Commerce"
+
+#: ecommerce/static/templates/_offer_course_list.html
+msgid "Enroll Now"
+msgstr "Inscrivez-vous maintenant"
