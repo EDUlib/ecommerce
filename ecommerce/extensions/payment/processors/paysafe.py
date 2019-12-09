@@ -7,7 +7,8 @@ import uuid
 from decimal import Decimal
 
 # Added by EDUlib
-from urlparse import urljoin
+#####from urlparse import urljoin
+from urllib.parse import urljoin
 from django.core.urlresolvers import reverse
 import pprint
 # Added by EDUlib
@@ -30,11 +31,17 @@ from ecommerce.extensions.payment.helpers import sign
 from ecommerce.extensions.payment.processors import BasePaymentProcessor
 ##########from ecommerce.extensions.payment.transport import RequestsTransport
 
-# Added by EDUlib
-from PythonNetBanxSDK.OptimalApiClient import OptimalApiClient
-from PythonNetBanxSDK.HostedPayment.Order import Order
-from PythonNetBanxSDK.HostedPayment.Refund import Refund
-from PythonNetBanxSDK.CustomerVault.Profile import Profile
+# Added by EDUlib for Python2
+#####from PythonNetBanxSDK.OptimalApiClient import OptimalApiClient
+#####from PythonNetBanxSDK.HostedPayment.Order import Order
+#####from PythonNetBanxSDK.HostedPayment.Refund import Refund
+#####from PythonNetBanxSDK.CustomerVault.Profile import Profile
+
+# Added by EDUlib for Python3
+from ecommerce.Paysafe.src.PythonNetBanxSDK.OptimalApiClient import OptimalApiClient
+from ecommerce.Paysafe.src.PythonNetBanxSDK.HostedPayment.Order import Order
+from ecommerce.Paysafe.src.PythonNetBanxSDK.HostedPayment.Refund import Refund
+from ecommerce.Paysafe.src.PythonNetBanxSDK.CustomerVault.Profile import Profile
 
 import random
 import string
@@ -207,7 +214,10 @@ class Paysafe(BasePaymentProcessor):
         # Added by EDUlib       
         new_total = int(basket.total_incl_tax * 100)
         new_total = str(new_total)
-        order_obj.totalAmount(unicode(new_total))
+        ##### Python 2
+        #####order_obj.totalAmount(unicode(new_total))
+        ##### Python 3
+        order_obj.totalAmount(new_total)
 
         profile_obj = Profile(None)
 
