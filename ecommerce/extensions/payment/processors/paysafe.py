@@ -141,7 +141,7 @@ class Paysafe(BasePaymentProcessor):
             'amount': str(basket.total_incl_tax),
             'currency': basket.currency,
             'consumer_id': basket.owner.username,
-            'override_custom_receipt_page': 'http://ec2-35-182-214-188.ca-central-1.compute.amazonaws.com/commerce/checkout/receipt/?orderNum={}'.format(basket.order_number),
+            'override_custom_receipt_page': 'http://ec2-18-188-138-103.us-east-2.compute.amazonaws.com/commerce/checkout/receipt/?orderNum={}'.format(basket.order_number),
             'override_custom_cancel_page': self.cancel_page_url,
             'payment_page_url' : None,
             'pierre': None,
