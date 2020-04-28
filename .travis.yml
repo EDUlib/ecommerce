@@ -4,7 +4,7 @@ dist: latest
 branches:
   only:
     - master
-    - open-release/ironwood.master
+    - open-release/juniper.rc1
 
 sudo: required
 services:
