@@ -7,9 +7,8 @@ import uuid
 from decimal import Decimal
 
 # Added by EDUlib
-#####from urlparse import urljoin
 from urllib.parse import urljoin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 import pprint
 # Added by EDUlib
 
