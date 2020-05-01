@@ -8,7 +8,7 @@ from decimal import Decimal
 
 # Added by EDUlib
 from urllib.parse import urljoin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 import pprint
 # Added by EDUlib
 
