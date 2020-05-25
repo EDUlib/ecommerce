@@ -4,12 +4,9 @@
 <!-- Message Body -->
 <tr>
     <td class="container-padding" bgcolor="#ffffff" style="background-color: #ffffff; padding-left: 30px; padding-right: 30px; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; border-radius: 5px;" align="left">
-        <br>
         <!--/message HTML content -->
         <p>{% filter force_escape %}{% blocktrans %}Hi {{full_name}},{% endblocktrans %}{% endfilter %}</p>
-        <br>
-        <p>{% blocktrans with course_title=course_title platform_name=platform_name %}Thank you for purchasing {{course_title}}. A charge will appear on your credit or debit card statement with a company name of {{platform_name}}.{% endblocktrans %}</p>
-        
+        <p>{% filter force_escape %}{% blocktrans with course_title=course_title platform_name=platform_name %}Thank you for purchasing {{course_title}}. A charge will appear on your credit or debit card statement with a company name of "{{platform_name}}".{% endblocktrans %}{% endfilter %}</p>
         <table style="width:100%;">
             <tr>
                 <th style="text-align: left; font-weight: bold; font-size: 13px; line-height: 20px; font-family: Open Sans, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
