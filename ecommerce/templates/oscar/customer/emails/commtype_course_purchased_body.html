@@ -8,7 +8,7 @@
         <!--/message HTML content -->
         <p>{% filter force_escape %}{% blocktrans %}Hi {{full_name}},{% endblocktrans %}{% endfilter %}</p>
         <br>
-        <p>{% blocktrans with course_title=course_title platform_name=platform_name %}Thank you for purchasing {{course_title}}. The charge below will appear on your next credit or debit card statement with a company name of {{platform_name}}.{% endblocktrans %}</p>
+        <p>{% blocktrans with course_title=course_title platform_name=platform_name %}Thank you for purchasing {{course_title}}. A charge will appear on your credit or debit card statement with a company name of {{platform_name}}.{% endblocktrans %}</p>
         
         <table style="width:100%;">
             <tr>
