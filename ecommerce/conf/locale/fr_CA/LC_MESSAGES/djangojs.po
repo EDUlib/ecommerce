@@ -537,7 +537,6 @@ msgid ""
 "Failed to process refund #%(refund_id)s: %(error)s. Please try again, or "
 "contact the E-Commerce Development Team."
 msgstr "Impossible de traiter le remboursement #%(refund_id)s: %(error)s. S'il vous plaît essayer de nouveau, ou contactez l'équipe de développement du commerce électronique."
-<<<<<<< HEAD
 
 #: ecommerce/static/templates/_offer_course_list.html
 msgid "Enroll Now"
@@ -550,5 +549,3 @@ msgstr "de rabais"
 #: ecommerce/static/js/views/offer_view.js
 msgid "Discount valid until"
 msgstr "Rabais disponible jusqu'au"
-=======
->>>>>>> forgot to add LC_MESSAGES directory under fr_CA
