@@ -113,7 +113,7 @@ class EdxOrderPlacementMixin(OrderPlacementMixin, metaclass=abc.ABCMeta):
         else:
             # We only record successful payments in the database.
             self.record_payment(basket, handled_processor_response)
-            properties.update({'total': handled_processor_response.total, 'success': True, })
+            #####properties.update({'total': handled_processor_response.total, 'success': True, })
         finally:
             track_segment_event(basket.site, basket.owner, 'Payment Processor Response', properties)
 
